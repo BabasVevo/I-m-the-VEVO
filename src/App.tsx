@@ -10,6 +10,11 @@ import { RegisterPage } from '@/pages/auth/RegisterPage';
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from '@/pages/auth/ResetPasswordPage';
 import { DashboardPage } from '@/pages/DashboardPage';
+import { PosPage } from '@/pages/PosPage';
+import { ProductsPage } from '@/pages/ProductsPage';
+import { CategoriesPage } from '@/pages/CategoriesPage';
+import { StockPage } from '@/pages/StockPage';
+import { SalesPage } from '@/pages/SalesPage';
 import { SettingsPage } from '@/pages/SettingsPage';
 import { PlaceholderPages } from '@/pages/PlaceholderPages';
 import { NAV_SECTIONS } from '@/lib/constants';
@@ -26,6 +31,8 @@ function AppRoutes() {
   const { session, loading } = useAuth();
 
   if (loading) return <LoadingScreen />;
+
+  const implementedPaths = ['/dashboard', '/pos', '/sales', '/products', '/categories', '/stock', '/settings'];
 
   return (
     <Routes>
@@ -45,9 +52,29 @@ function AppRoutes() {
           <PermissionGuard permission="dashboard.view"><DashboardPage /></PermissionGuard>
         } />
 
-        {/* All nav placeholder pages */}
+        <Route path="/pos" element={
+          <PermissionGuard permission="pos.sell"><PosPage /></PermissionGuard>
+        } />
+
+        <Route path="/sales" element={
+          <PermissionGuard permission="sales.view"><SalesPage /></PermissionGuard>
+        } />
+
+        <Route path="/products" element={
+          <PermissionGuard permission="products.view"><ProductsPage /></PermissionGuard>
+        } />
+
+        <Route path="/categories" element={
+          <PermissionGuard permission="categories.manage"><CategoriesPage /></PermissionGuard>
+        } />
+
+        <Route path="/stock" element={
+          <PermissionGuard permission="stock.view"><StockPage /></PermissionGuard>
+        } />
+
+        {/* All other nav placeholder pages */}
         {NAV_SECTIONS.flatMap((s) => s.items)
-          .filter((item) => item.path !== '/dashboard' && item.path !== '/settings')
+          .filter((item) => !implementedPaths.includes(item.path))
           .map((item) => (
             <Route
               key={item.path}

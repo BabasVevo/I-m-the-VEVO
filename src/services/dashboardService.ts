@@ -30,7 +30,7 @@ export interface RecentSalesResponse {
 // Demo Fallback Data Generator & Local Storage Store
 // ----------------------------------------------------
 const DEMO_SALES_KEY = 'verdant_demo_sales_v2';
-const DEMO_INVENTORY_KEY = 'verdant_demo_inventory_v2';
+const DEMO_INVENTORY_KEY = 'verdant_demo_inventory_v3';
 const DEMO_TARGETS_KEY = 'verdant_demo_targets_v2';
 const DEMO_BRANCHES_KEY = 'verdant_demo_branches_v2';
 
@@ -599,16 +599,36 @@ function getStoredSales(): Sale[] {
 
 function getStoredInventory(): InventoryItem[] {
   const raw = localStorage.getItem(DEMO_INVENTORY_KEY);
+  let items: InventoryItem[] = [];
   if (!raw) {
-    const initial = getInitialDemoInventory();
-    localStorage.setItem(DEMO_INVENTORY_KEY, JSON.stringify(initial));
-    return initial;
+    items = getInitialDemoInventory();
+    localStorage.setItem(DEMO_INVENTORY_KEY, JSON.stringify(items));
+  } else {
+    try {
+      items = JSON.parse(raw);
+    } catch {
+      items = getInitialDemoInventory();
+    }
   }
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return getInitialDemoInventory();
+
+  // Ensure products are attached if missing
+  const rawProds = localStorage.getItem('verdant_demo_products_v3');
+  if (rawProds) {
+    try {
+      const prods: Product[] = JSON.parse(rawProds);
+      return items.map((item) => {
+        if (!item.product) {
+          const found = prods.find((p) => p.id === item.product_id);
+          return { ...item, product: found || null };
+        }
+        return item;
+      });
+    } catch {
+      // ignore
+    }
   }
+
+  return items;
 }
 
 // ----------------------------------------------------
