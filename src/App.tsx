@@ -15,6 +15,11 @@ import { ProductsPage } from '@/pages/ProductsPage';
 import { CategoriesPage } from '@/pages/CategoriesPage';
 import { StockPage } from '@/pages/StockPage';
 import { SalesPage } from '@/pages/SalesPage';
+import { CustomersPage } from '@/pages/CustomersPage';
+import { CustomerSegmentsPage } from '@/pages/CustomerSegmentsPage';
+import { SuppliersPage } from '@/pages/SuppliersPage';
+import { PurchasesPage } from '@/pages/PurchasesPage';
+import { ExpensesPage } from '@/pages/ExpensesPage';
 import { SettingsPage } from '@/pages/SettingsPage';
 import { PlaceholderPages } from '@/pages/PlaceholderPages';
 import { NAV_SECTIONS } from '@/lib/constants';
@@ -32,7 +37,21 @@ function AppRoutes() {
 
   if (loading) return <LoadingScreen />;
 
-  const implementedPaths = ['/dashboard', '/pos', '/sales', '/products', '/categories', '/stock', '/settings'];
+  const implementedPaths = [
+    '/dashboard', 
+    '/pos', 
+    '/sales', 
+    '/products', 
+    '/categories', 
+    '/stock', 
+    '/purchases',
+    '/suppliers',
+    '/expenses',
+    '/customers',
+    '/segments',
+    '/customers/segments',
+    '/settings'
+  ];
 
   return (
     <Routes>
@@ -70,6 +89,30 @@ function AppRoutes() {
 
         <Route path="/stock" element={
           <PermissionGuard permission="stock.view"><StockPage /></PermissionGuard>
+        } />
+
+        <Route path="/purchases" element={
+          <PermissionGuard permission="purchases.view"><PurchasesPage /></PermissionGuard>
+        } />
+
+        <Route path="/suppliers" element={
+          <PermissionGuard permission="suppliers.view"><SuppliersPage /></PermissionGuard>
+        } />
+
+        <Route path="/expenses" element={
+          <PermissionGuard permission="expenses.view"><ExpensesPage /></PermissionGuard>
+        } />
+
+        <Route path="/customers" element={
+          <PermissionGuard permission="customers.view"><CustomersPage /></PermissionGuard>
+        } />
+
+        <Route path="/segments" element={
+          <PermissionGuard permission="segments.manage"><CustomerSegmentsPage /></PermissionGuard>
+        } />
+
+        <Route path="/customers/segments" element={
+          <PermissionGuard permission="segments.manage"><CustomerSegmentsPage /></PermissionGuard>
         } />
 
         {/* All other nav placeholder pages */}

@@ -39,7 +39,7 @@ export function CustomerCreateModal({
       setSubmitting(true);
       setError(null);
 
-      const created = await createCustomer({
+      const { customer: created, duplicateWarning } = await createCustomer({
         business_id: businessId,
         name: name.trim(),
         phone: phone.trim() || null,
@@ -47,6 +47,14 @@ export function CustomerCreateModal({
         address: address.trim() || null,
         credit_limit: parseFloat(creditLimit) || 0,
       });
+
+      if (duplicateWarning) {
+        addToast({
+          type: 'warning',
+          title: 'Duplicate Phone Notice',
+          message: duplicateWarning,
+        });
+      }
 
       addToast({
         type: 'success',

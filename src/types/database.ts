@@ -151,15 +151,179 @@ export interface StockMovement {
   creator?: Profile | null;
 }
 
+export type CustomerType = 'regular' | 'vip' | 'wholesale' | 'business' | 'walk_in';
+export type CustomerStatus = 'active' | 'inactive' | 'archived';
+export type CustomerGender = 'male' | 'female' | 'other';
+
+export interface Tag {
+  id: string;
+  business_id: string;
+  name: string;
+  color: string;
+  description?: string | null;
+  created_at: string;
+  customer_count?: number;
+}
+
+export interface CustomerTagAssignment {
+  id: string;
+  business_id: string;
+  customer_id: string;
+  tag_id: string;
+  tag?: Tag;
+  created_at: string;
+}
+
+export type CustomerNoteType = 'general' | 'preference' | 'special_request' | 'follow_up' | 'relationship';
+
+export interface CustomerNote {
+  id: string;
+  business_id: string;
+  customer_id: string;
+  author_id: string | null;
+  author?: Profile | null;
+  content: string;
+  note_type: CustomerNoteType;
+  created_at: string;
+  updated_at: string;
+}
+
+export type CustomerActivityType =
+  | 'created'
+  | 'sale'
+  | 'refund'
+  | 'coupon_used'
+  | 'note_added'
+  | 'tag_assigned'
+  | 'tag_removed'
+  | 'segment_change'
+  | 'status_change'
+  | 'balance_adjusted';
+
+export interface CustomerActivity {
+  id: string;
+  business_id: string;
+  customer_id: string;
+  activity_type: CustomerActivityType;
+  description: string;
+  metadata?: Record<string, unknown> | null;
+  performed_by?: string | null;
+  performer?: Profile | null;
+  created_at: string;
+}
+
+export interface SegmentRuleCondition {
+  id?: string;
+  field:
+    | 'total_spent'
+    | 'total_orders'
+    | 'last_purchase_days'
+    | 'first_purchase_days'
+    | 'customer_type'
+    | 'status'
+    | 'city'
+    | 'assigned_branch_id'
+    | 'has_tag'
+    | 'credit_balance';
+  operator: 'equals' | 'not_equals' | 'greater_than' | 'less_than' | 'greater_or_equal' | 'less_or_equal' | 'contains' | 'in';
+  value: string | number | string[];
+}
+
+export interface CustomerSegment {
+  id: string;
+  business_id: string;
+  name: string;
+  description?: string | null;
+  segment_type: 'system' | 'custom';
+  color: string;
+  is_active: boolean;
+  conditions_logic: 'AND' | 'OR';
+  rules: SegmentRuleCondition[];
+  customer_count?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SegmentSettings {
+  new_customer_days: number;
+  active_customer_days: number;
+  regular_order_count: number;
+  vip_spend_threshold: number;
+  high_value_spend_threshold: number;
+  inactive_days: number;
+  at_risk_min_days: number;
+  at_risk_max_days: number;
+  lost_customer_days: number;
+}
+
+export interface CustomerPurchasedProduct {
+  product_id: string | null;
+  product_name: string;
+  sku: string | null;
+  quantity_purchased: number;
+  order_count: number;
+  total_spent: number;
+  last_purchase_date: string;
+}
+
+export interface CustomerBranchHistory {
+  branch_id: string;
+  branch_name: string;
+  purchase_count: number;
+  total_spent: number;
+  last_visit: string;
+}
+
+export interface CustomerStatsSummary {
+  total_customers: number;
+  new_customers_this_month: number;
+  active_customers: number;
+  inactive_customers: number;
+  vip_customers: number;
+  avg_customer_spending: number;
+  avg_order_value: number;
+  repeat_customer_rate: number;
+  total_receivables: number;
+}
+
+export interface CustomerStats {
+  totalCustomers: number;
+  activeCustomers: number;
+  newThisMonth: number;
+  vipCustomers: number;
+  wholesaleCustomers: number;
+  totalRevenue: number;
+  averageCustomerSpend: number;
+  totalOutstandingBalance: number;
+  debtorsCount: number;
+}
+
 export interface Customer {
   id: string;
   business_id: string;
   name: string;
+  first_name?: string | null;
+  last_name?: string | null;
   email: string | null;
   phone: string | null;
   address: string | null;
+  city?: string | null;
+  country?: string | null;
+  date_of_birth?: string | null;
+  gender?: CustomerGender | null;
+  customer_type?: CustomerType;
+  notes?: string | null;
+  assigned_branch_id?: string | null;
+  assigned_branch?: Branch | null;
+  status?: CustomerStatus;
   credit_limit: number;
   current_balance: number;
+  total_orders?: number;
+  total_spent?: number;
+  total_refunded?: number;
+  first_purchase_at?: string | null;
+  last_purchase_at?: string | null;
+  tags?: Tag[];
   created_at: string;
   updated_at: string;
 }
@@ -286,3 +450,281 @@ export interface SalesTarget {
   created_at: string;
   updated_at: string;
 }
+
+// ============================================================
+// Phase 7: Suppliers, Purchase Orders & Expense Management
+// ============================================================
+
+export type SupplierType =
+  | 'manufacturer'
+  | 'wholesaler'
+  | 'distributor'
+  | 'importer'
+  | 'service_provider'
+  | 'other';
+
+export type SupplierStatus = 'active' | 'inactive' | 'archived';
+
+export type PaymentTerms =
+  | 'net_15'
+  | 'net_30'
+  | 'net_60'
+  | 'cod'
+  | 'due_on_receipt'
+  | 'advance';
+
+export interface Supplier {
+  id: string;
+  business_id: string;
+  name: string;
+  contact_person: string | null;
+  supplier_type: SupplierType;
+  tax_number: string | null;
+  website: string | null;
+  phone: string | null;
+  alternative_phone: string | null;
+  email: string | null;
+  address: string | null;
+  city: string | null;
+  country: string | null;
+  payment_terms: PaymentTerms;
+  credit_limit: number;
+  current_balance: number;
+  notes: string | null;
+  assigned_branch_id: string | null;
+  status: SupplierStatus;
+  total_purchases_count?: number;
+  total_purchases_amount?: number;
+  total_paid_amount?: number;
+  last_purchase_date?: string | null;
+  assigned_branch?: Branch | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SupplierNote {
+  id: string;
+  business_id: string;
+  supplier_id: string;
+  author_id: string | null;
+  author?: Profile | null;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SupplierStats {
+  totalSuppliers: number;
+  activeSuppliers: number;
+  totalPurchased: number;
+  totalOutstandingPayables: number;
+  overduePayablesCount: number;
+}
+
+export type PurchaseOrderStatus =
+  | 'draft'
+  | 'ordered'
+  | 'partially_received'
+  | 'received'
+  | 'cancelled';
+
+export type PurchaseOrderPaymentStatus = 'unpaid' | 'partial' | 'paid';
+
+export interface PurchaseOrderItem {
+  id: string;
+  purchase_order_id: string;
+  product_id: string | null;
+  product_name: string;
+  sku: string | null;
+  unit: string;
+  quantity_ordered: number;
+  quantity_received: number;
+  quantity_damaged?: number;
+  unit_cost: number;
+  discount_amount: number;
+  tax_rate: number;
+  tax_amount: number;
+  line_total: number;
+  product?: Product | null;
+  created_at: string;
+}
+
+export interface PurchasePayment {
+  id: string;
+  business_id: string;
+  purchase_order_id: string;
+  supplier_id: string;
+  amount: number;
+  payment_method: PaymentMethod;
+  payment_date: string;
+  reference_number: string | null;
+  notes: string | null;
+  created_by: string | null;
+  creator?: Profile | null;
+  created_at: string;
+}
+
+export interface PurchaseOrder {
+  id: string;
+  business_id: string;
+  branch_id: string;
+  supplier_id: string;
+  po_number: string;
+  order_date: string;
+  expected_delivery_date: string | null;
+  payment_terms: PaymentTerms;
+  status: PurchaseOrderStatus;
+  payment_status: PurchaseOrderPaymentStatus;
+  subtotal: number;
+  discount_amount: number;
+  tax_amount: number;
+  grand_total: number;
+  paid_amount: number;
+  due_amount: number;
+  notes: string | null;
+  receiving_notes?: string | null;
+  created_by: string | null;
+  received_at?: string | null;
+  created_at: string;
+  updated_at: string;
+  branch?: Branch | null;
+  supplier?: Supplier | null;
+  creator?: Profile | null;
+  items?: PurchaseOrderItem[];
+  payments?: PurchasePayment[];
+}
+
+export interface PurchaseReturnItem {
+  id: string;
+  return_id: string;
+  purchase_item_id: string;
+  product_id: string | null;
+  product_name: string;
+  quantity: number;
+  unit_cost: number;
+  total_amount: number;
+  reason: string;
+  created_at: string;
+}
+
+export interface PurchaseReturn {
+  id: string;
+  business_id: string;
+  branch_id: string;
+  purchase_order_id: string;
+  supplier_id: string;
+  return_number: string;
+  return_date: string;
+  total_refund_amount: number;
+  reason: string;
+  notes?: string | null;
+  created_by: string | null;
+  created_at: string;
+  items?: PurchaseReturnItem[];
+}
+
+export interface PurchasingStats {
+  totalOrders: number;
+  totalPurchasesAmount: number;
+  totalPaid: number;
+  totalPayablesDue: number;
+  pendingDeliveriesCount: number;
+  partiallyReceivedCount: number;
+  draftsCount: number;
+}
+
+export interface ExpenseCategory {
+  id: string;
+  business_id: string;
+  name: string;
+  code?: string | null;
+  description: string | null;
+  color?: string;
+  icon?: string;
+  is_active: boolean;
+  expenses_count?: number;
+  total_spent?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export type ExpenseStatus =
+  | 'draft'
+  | 'pending_approval'
+  | 'approved'
+  | 'rejected'
+  | 'paid';
+
+export interface ExpenseAttachment {
+  id: string;
+  expense_id: string;
+  file_name: string;
+  file_type: string;
+  file_size: number;
+  file_url: string;
+  uploaded_by: string | null;
+  created_at: string;
+}
+
+export interface Expense {
+  id: string;
+  business_id: string;
+  branch_id: string;
+  category_id: string;
+  expense_number: string;
+  expense_date: string;
+  description: string;
+  amount: number;
+  tax_amount?: number;
+  payment_method: PaymentMethod;
+  reference_number: string | null;
+  payee: string | null;
+  supplier_id?: string | null;
+  status: ExpenseStatus;
+  approved_by: string | null;
+  approved_at: string | null;
+  approval_notes: string | null;
+  paid_from_cash_register?: boolean;
+  register_session_id?: string | null;
+  notes: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+  branch?: Branch | null;
+  category?: ExpenseCategory | null;
+  supplier?: Supplier | null;
+  creator?: Profile | null;
+  approver?: Profile | null;
+  attachments?: ExpenseAttachment[];
+}
+
+export interface RecurringExpense {
+  id: string;
+  business_id: string;
+  branch_id: string;
+  category_id: string;
+  title: string;
+  amount: number;
+  frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+  start_date: string;
+  end_date?: string | null;
+  last_generated_date?: string | null;
+  next_due_date: string;
+  payment_method: PaymentMethod;
+  payee?: string | null;
+  is_active: boolean;
+  auto_generate?: boolean;
+  created_at: string;
+  updated_at: string;
+  category?: ExpenseCategory | null;
+  branch?: Branch | null;
+}
+
+export interface ExpenseStats {
+  totalExpensesToday: number;
+  totalExpensesThisMonth: number;
+  pendingApprovalCount: number;
+  pendingApprovalAmount: number;
+  approvedPaidThisMonth: number;
+}
+

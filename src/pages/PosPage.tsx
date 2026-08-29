@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Search,
   Scan,
@@ -65,9 +66,13 @@ export function PosPage() {
   const [stockStatusFilter, setStockStatusFilter] = useState<'all' | 'in_stock'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
+  const location = useLocation();
+
   // Cart State
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    (location.state as { selectedCustomer?: Customer } | null)?.selectedCustomer || null
+  );
   const [saleDiscount, setSaleDiscount] = useState<SaleDiscount>({
     type: 'percentage',
     value: 0,

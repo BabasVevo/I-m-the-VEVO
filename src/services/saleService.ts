@@ -14,7 +14,7 @@ import type {
   ReceiptSettings,
 } from '@/types/database';
 import { adjustStock } from './inventoryService';
-import { updateCustomerBalance } from './customerService';
+import { updateCustomerBalance, recordCustomerSale, recordCustomerRefund } from './customerService';
 import { formatDateTime } from '@/lib/format';
 
 export const DEMO_SALES_KEY = 'verdant_demo_sales_v2';
@@ -1357,6 +1357,20 @@ export async function processSaleReturn(input: ProcessReturnInput): Promise<Sale
         console.warn('Error updating customer credit balance on refund:', err);
       }
     }
+
+    if (sale.customer_id) {
+      try {
+        await recordCustomerRefund(
+          sale.customer_id,
+          sale.business_id,
+          totalRefundAmount,
+          returnNumber,
+          input.processedById
+        );
+      } catch (err) {
+        console.warn('Error recording customer refund activity:', err);
+      }
+    }
   }
 
   if (isSupabaseConfigured) {
@@ -1661,6 +1675,17 @@ export async function processSale(input: ProcessSaleInput): Promise<Sale> {
           await updateCustomerBalance(input.customerId, input.dueAmount);
         }
 
+        // 5. Update customer stats & log sale activity
+        if (input.customerId) {
+          await recordCustomerSale(
+            input.customerId,
+            input.businessId,
+            input.totalAmount,
+            receiptNum,
+            input.cashierId
+          );
+        }
+
         // Update local sales list as well
         const localSales = getStoredSales();
         setStoredSales([{ ...saleRecord, id: persistedSaleId }, ...localSales]);
@@ -1700,6 +1725,17 @@ export async function processSale(input: ProcessSaleInput): Promise<Sale> {
   // 3. Update customer balance if credit/due
   if (input.customerId && input.dueAmount > 0) {
     await updateCustomerBalance(input.customerId, input.dueAmount);
+  }
+
+  // 4. Update customer stats & log sale activity
+  if (input.customerId) {
+    await recordCustomerSale(
+      input.customerId,
+      input.businessId,
+      input.totalAmount,
+      receiptNum,
+      input.cashierId
+    );
   }
 
   playPosBeep('success');
