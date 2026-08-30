@@ -945,6 +945,22 @@ export async function generateExpenseFromRecurring(
   return exp;
 }
 
+export async function processRecurringExpenses(
+  businessId: string,
+  userId?: string | null
+): Promise<number> {
+  const recs = await fetchRecurringExpenses(businessId);
+  let count = 0;
+  for (const rec of recs) {
+    if (rec.is_active) {
+      await generateExpenseFromRecurring(businessId, rec.id, userId);
+      count++;
+    }
+  }
+  return count;
+}
+
+
 export async function fetchExpenseStats(
   businessId: string,
   branchId?: string | null
@@ -978,3 +994,42 @@ export async function fetchExpenseStats(
     approvedPaidThisMonth,
   };
 }
+
+export function exportExpensesToCSV(expenses: Expense[]) {
+  const headers = [
+    'Voucher No',
+    'Date',
+    'Category',
+    'Description',
+    'Amount',
+    'Tax Included',
+    'Payment Method',
+    'Status',
+    'Vendor / Payee',
+    'Reference No',
+  ];
+
+  const rows = expenses.map((e) => [
+    `"${e.expense_number || e.id}"`,
+    e.expense_date,
+    `"${(e.category?.name || 'General').replace(/"/g, '""')}"`,
+    `"${(e.description || '').replace(/"/g, '""')}"`,
+    e.amount,
+    e.tax_amount || 0,
+    e.payment_method,
+    e.status,
+    `"${(e.payee || e.vendor_name || '').replace(/"/g, '""')}"`,
+    `"${(e.reference_number || '').replace(/"/g, '""')}"`,
+  ]);
+
+  const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `expenses_export_${new Date().toISOString().slice(0, 10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+

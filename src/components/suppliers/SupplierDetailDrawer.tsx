@@ -81,11 +81,11 @@ export function SupplierDetailDrawer({
         title: 'Note Added',
         message: 'Supplier internal note saved successfully.',
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       addToast({
         type: 'error',
         title: 'Error',
-        message: err?.message || 'Could not save note.',
+        message: err instanceof Error ? err.message : 'Could not save note.',
       });
     } finally {
       setAddingNote(false);
@@ -101,11 +101,11 @@ export function SupplierDetailDrawer({
         title: 'Note Deleted',
         message: 'Note removed successfully.',
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       addToast({
         type: 'error',
         title: 'Error',
-        message: err?.message || 'Failed to delete note.',
+        message: err instanceof Error ? err.message : 'Failed to delete note.',
       });
     }
   };
@@ -388,7 +388,10 @@ export function SupplierDetailDrawer({
                       return (
                         <div
                           key={po.id}
-                          className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs hover:border-brand-500 dark:border-navy-800 dark:bg-navy-900 transition-all"
+                          onClick={() => onViewPurchaseOrder?.(po)}
+                          className={`rounded-xl border border-gray-200 bg-white p-4 shadow-xs dark:border-navy-800 dark:bg-navy-900 transition-all ${
+                            onViewPurchaseOrder ? 'cursor-pointer hover:border-brand-500' : ''
+                          }`}
                         >
                           <div className="flex items-center justify-between">
                             <div>

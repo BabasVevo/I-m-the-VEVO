@@ -108,8 +108,8 @@ export function SupplierFormModal({
         notes: notes.trim() || null,
       });
       onClose();
-    } catch (err: any) {
-      setError(err?.message || 'Failed to save supplier. Please check your inputs.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to save supplier. Please check your inputs.');
     } finally {
       setLoading(false);
     }

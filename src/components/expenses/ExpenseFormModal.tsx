@@ -229,7 +229,7 @@ export function ExpenseFormModal({
 
             <div>
               <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                Expense Amount (TZS) <span className="text-rose-500">*</span>
+                Expense Amount ({currency}) <span className="text-rose-500">*</span>
               </label>
               <input
                 type="number"
@@ -245,7 +245,7 @@ export function ExpenseFormModal({
 
             <div>
               <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                Tax / VAT Included (TZS)
+                Tax / VAT Included ({currency})
               </label>
               <input
                 type="number"

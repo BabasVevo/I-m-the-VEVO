@@ -14,6 +14,7 @@ import {
   updateSupplier,
   deleteSupplier,
   exportSuppliersToCSV,
+  type CreateSupplierInput,
 } from '@/services/supplierService';
 import type { Supplier, SupplierStats, SupplierStatus, PaymentMethod } from '@/types/database';
 
@@ -90,7 +91,7 @@ export function SuppliersPage() {
         message: `${data.name || 'Supplier'} has been updated successfully.`,
       });
     } else {
-      await createSupplier(businessId, data as any);
+      await createSupplier(businessId, data as unknown as CreateSupplierInput);
       addToast({
         type: 'success',
         title: 'Supplier Added',
@@ -110,11 +111,11 @@ export function SuppliersPage() {
           message: `${supplier.name} was successfully removed.`,
         });
         loadData();
-      } catch (err: any) {
+      } catch (err: unknown) {
         addToast({
           type: 'error',
           title: 'Error',
-          message: err?.message || 'Failed to remove supplier.',
+          message: err instanceof Error ? err.message : 'Failed to remove supplier.',
         });
       }
     }

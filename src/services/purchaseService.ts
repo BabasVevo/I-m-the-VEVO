@@ -1026,6 +1026,72 @@ export async function createPurchaseReturn(
   return newReturn;
 }
 
+export async function updatePurchaseOrderStatus(
+  poId: string,
+  status: PurchaseOrderStatus
+): Promise<void> {
+  const now = new Date().toISOString();
+  if (isSupabaseConfigured) {
+    try {
+      await supabase
+        .from('purchase_orders')
+        .update({ status, updated_at: now })
+        .eq('id', poId);
+      return;
+    } catch (err) {
+      console.warn('Supabase updatePurchaseOrderStatus error, falling back:', err);
+    }
+  }
+
+  const orders = getStoredPurchases();
+  const idx = orders.findIndex((o) => o.id === poId);
+  if (idx !== -1) {
+    orders[idx].status = status;
+    orders[idx].updated_at = now;
+    saveStoredPurchases(orders);
+  }
+}
+
+export function exportPurchasesToCSV(orders: PurchaseOrder[]) {
+  const headers = [
+    'PO Number',
+    'Supplier',
+    'Order Date',
+    'Expected Delivery',
+    'Status',
+    'Payment Status',
+    'Subtotal',
+    'Tax Amount',
+    'Grand Total',
+    'Paid Amount',
+    'Due Amount',
+  ];
+
+  const rows = orders.map((o) => [
+    `"${o.po_number}"`,
+    `"${(o.supplier?.name || '').replace(/"/g, '""')}"`,
+    o.order_date,
+    o.expected_delivery_date || '',
+    o.status,
+    o.payment_status,
+    o.subtotal,
+    o.tax_amount,
+    o.grand_total,
+    o.paid_amount,
+    o.due_amount,
+  ]);
+
+  const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `purchase_orders_${new Date().toISOString().slice(0, 10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 export async function fetchPurchasingStats(
   businessId: string,
   branchId?: string | null
@@ -1050,3 +1116,4 @@ export async function fetchPurchasingStats(
     draftsCount,
   };
 }
+
