@@ -84,14 +84,12 @@ export function ReceiveGoodsModal({
       setLoading(true);
       setError(null);
       await onSubmit({
-        purchase_id: purchaseOrder.id,
-        branch_id: purchaseOrder.branch_id,
-        notes: notes.trim() || undefined,
+        poId: purchaseOrder.id,
+        notes: notes.trim() || null,
         items: toReceive.map((i) => ({
-          purchase_item_id: i.purchase_item_id,
-          quantity_received: Number(i.quantity_receiving_now),
-          batch_number: i.batch_number.trim() || undefined,
-          expiry_date: i.expiry_date || undefined,
+          item_id: i.purchase_item_id,
+          product_name: i.product_name,
+          quantity_to_receive: Number(i.quantity_receiving_now),
         })),
       });
       onClose();

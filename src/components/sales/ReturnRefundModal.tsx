@@ -64,7 +64,7 @@ export function ReturnRefundModal({
         productId: it.product_id,
         productName: it.product_name,
         sku: it.sku,
-        unitPrice: it.unitPrice || it.unit_price,
+        unitPrice: it.unit_price,
         originalQty: it.quantity,
         alreadyReturnedQty: alreadyRet,
         remainingQty: remaining,

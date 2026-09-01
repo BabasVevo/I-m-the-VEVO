@@ -55,14 +55,14 @@ export function ExpenseFormModal({
 
   useEffect(() => {
     if (expense) {
-      setTitle(expense.title || '');
+      setTitle(expense.description || '');
       setCategoryId(expense.category_id || '');
       setBranchId(expense.branch_id || '');
       setAmount(expense.amount || '');
       setTaxAmount(expense.tax_amount || 0);
       setExpenseDate(expense.expense_date ? expense.expense_date.slice(0, 10) : new Date().toISOString().slice(0, 10));
       setPaymentMethod(expense.payment_method || 'mobile_money');
-      setVendorName(expense.vendor_name || '');
+      setVendorName(expense.payee || '');
       setSupplierId(expense.supplier_id || '');
       setReferenceNumber(expense.reference_number || '');
       setStatus(expense.status || 'paid');
@@ -114,14 +114,14 @@ export function ExpenseFormModal({
       setLoading(true);
       setError(null);
       await onSubmit({
-        title: title.trim(),
-        category_id: categoryId || null,
-        branch_id: branchId || null,
+        description: title.trim(),
+        category_id: categoryId,
+        branch_id: branchId,
         amount: numAmount,
         tax_amount: Number(taxAmount) || 0,
         expense_date: expenseDate,
         payment_method: paymentMethod,
-        vendor_name: vendorName.trim() || null,
+        payee: vendorName.trim() || null,
         supplier_id: supplierId || null,
         reference_number: referenceNumber.trim() || null,
         status,

@@ -121,7 +121,7 @@ export function PosPage() {
       const [fetchedBranches, fetchedCategories, fetchedProducts] = await Promise.all([
         fetchBranches(businessId),
         fetchCategories(businessId),
-        fetchProducts({ businessId, branchId: selectedBranchId, pageSize: 200 }),
+        fetchProducts(businessId, { branchId: selectedBranchId, pageSize: 200 }),
       ]);
 
       setBranches(fetchedBranches);

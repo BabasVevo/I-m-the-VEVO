@@ -52,8 +52,8 @@ export function CustomerTable({
     );
   }
 
-  const getTypeBadge = (type: string) => {
-    switch (type) {
+  const getTypeBadge = (type?: string | null) => {
+    switch (type || 'regular') {
       case 'vip':
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">
@@ -81,8 +81,8 @@ export function CustomerTable({
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
+  const getStatusBadge = (status?: string | null) => {
+    switch (status || 'active') {
       case 'active':
         return (
           <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">

@@ -168,10 +168,7 @@ export function ProductsPage() {
       });
       addToast('success', `Product "${data.name}" updated successfully.`);
     } else {
-      await createProduct({
-        ...data,
-        business_id: businessId,
-      });
+      await createProduct(businessId, data);
       addToast('success', `Product "${data.name}" added to catalog.`);
     }
     loadData();
@@ -179,10 +176,7 @@ export function ProductsPage() {
 
   // Handle Quick Add Category
   const handleQuickAddCategory = async (catData: { name: string; description: string; is_active: boolean }) => {
-    const newCat = await createCategory({
-      business_id: businessId,
-      ...catData,
-    });
+    const newCat = await createCategory(businessId, catData);
     setCategories((prev) => [...prev, newCat]);
     addToast('success', `Category "${newCat.name}" created.`);
   };

@@ -946,7 +946,6 @@ export function SalesPage() {
         <SaleDetailsModal
           isOpen={Boolean(activeSaleForDetails)}
           sale={activeSaleForDetails}
-          currentUser={profile}
           currency={currency}
           onClose={() => setActiveSaleForDetails(null)}
           onPrint={(s) => {

@@ -54,13 +54,13 @@ export function CustomerSegmentsPage() {
     try {
       const [segs, custRes, tagList, branchList] = await Promise.all([
         fetchSegments(businessId),
-        fetchCustomers({ businessId, pageSize: 500 }),
+        fetchCustomers(businessId),
         fetchTags(businessId),
         fetchBranches(businessId),
       ]);
 
       setSegments(segs || []);
-      setAllCustomers(custRes.customers || []);
+      setAllCustomers(custRes || []);
       setTags(tagList || []);
       setBranches(branchList || []);
     } catch (err) {
@@ -172,7 +172,7 @@ export function CustomerSegmentsPage() {
                       <h3 className="font-bold text-base text-navy-900 dark:text-white line-clamp-1">
                         {seg.name}
                       </h3>
-                      {seg.is_system && (
+                      {seg.segment_type === 'system' && (
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                           System Rule
                         </span>
@@ -181,7 +181,7 @@ export function CustomerSegmentsPage() {
                   </div>
 
                   <div className="flex items-center gap-1">
-                    {!seg.is_system && (
+                    {seg.segment_type !== 'system' && (
                       <>
                         <button
                           type="button"

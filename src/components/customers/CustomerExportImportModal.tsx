@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Download, Upload, X, RefreshCw } from 'lucide-react';
 import type { Customer, CustomerType } from '@/types/database';
-import { exportCustomersToCSV, createCustomer } from '@/services/customerService';
+import { buildCustomersCsv, createCustomer } from '@/services/customerService';
 import { useToast } from '@/context/ToastContext';
 
 interface CustomerExportImportModalProps {
@@ -35,7 +35,7 @@ export function CustomerExportImportModal({
 
   const handleExportCSV = () => {
     try {
-      const csvData = exportCustomersToCSV(customers, currency);
+      const csvData = buildCustomersCsv(customers, currency);
       const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');

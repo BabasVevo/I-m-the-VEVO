@@ -247,7 +247,7 @@ export function ExpenseList({
                     >
                       <td className="px-4 py-3.5">
                         <div className="font-bold text-gray-900 dark:text-white">
-                          {expense.title}
+                          {expense.description}
                         </div>
                         {expense.notes && (
                           <p className="text-2xs text-gray-500 dark:text-gray-400 line-clamp-1">
@@ -268,7 +268,7 @@ export function ExpenseList({
 
                       <td className="px-4 py-3.5">
                         <div className="font-medium text-gray-800 dark:text-gray-200">
-                          {expense.vendor_name || '—'}
+                          {expense.payee || '—'}
                         </div>
                         {expense.supplier && (
                           <span className="text-2xs text-brand-600 dark:text-brand-400">

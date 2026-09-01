@@ -24,7 +24,8 @@ import type {
   PurchaseOrder,
   PurchasingStats,
   PurchaseOrderStatus,
-  PaymentStatus,
+  PurchaseOrderPaymentStatus,
+  PaymentTerms,
   Supplier,
   ReceivePurchaseStockParams,
   PaymentMethod,
@@ -47,11 +48,13 @@ export function PurchasesPage() {
     totalPaid: 0,
     totalPayablesDue: 0,
     pendingDeliveriesCount: 0,
+    partiallyReceivedCount: 0,
+    draftsCount: 0,
   });
 
   const [search, setSearch] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<PurchaseOrderStatus | 'all'>('all');
-  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState<PaymentStatus | 'all'>('all');
+  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState<PurchaseOrderPaymentStatus | 'all'>('all');
   const [selectedSupplier, setSelectedSupplier] = useState<string>('');
   const [selectedBranch, setSelectedBranch] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -95,7 +98,7 @@ export function PurchasesPage() {
         fetchSuppliers(businessId, { pageSize: 200 }),
       ]);
 
-      setPurchases(poRes.purchases);
+      setPurchases(poRes.orders);
       setTotalCount(poRes.totalCount);
       setStats(statsRes);
       setSuppliers(supRes.suppliers);
@@ -111,15 +114,13 @@ export function PurchasesPage() {
   }, [loadData]);
 
   const handleCreatePO = async (data: {
-    supplier_id: string;
     branch_id: string;
+    supplier_id: string;
     order_date: string;
-    expected_delivery_date?: string;
-    payment_terms?: string;
-    tax_rate?: number;
-    shipping_cost?: number;
-    discount_amount?: number;
-    notes?: string;
+    expected_delivery_date: string | null;
+    payment_terms: PaymentTerms;
+    status: PurchaseOrderStatus;
+    notes: string | null;
     items: Array<{
       product_id?: string | null;
       product_name: string;
@@ -127,13 +128,24 @@ export function PurchasesPage() {
       unit: string;
       quantity_ordered: number;
       unit_cost: number;
+      discount_amount?: number;
       tax_rate?: number;
     }>;
   }) => {
-    await createPurchaseOrder(businessId, {
-      ...data,
-      created_by: user?.id || null,
-    });
+    await createPurchaseOrder(
+      businessId,
+      {
+        branch_id: data.branch_id,
+        supplier_id: data.supplier_id,
+        order_date: data.order_date,
+        expected_delivery_date: data.expected_delivery_date,
+        payment_terms: data.payment_terms,
+        status: data.status,
+        notes: data.notes,
+        items: data.items,
+      },
+      user?.id || null
+    );
     addToast({
       type: 'success',
       title: 'Purchase Order Created',
@@ -143,7 +155,7 @@ export function PurchasesPage() {
   };
 
   const handleReceiveStock = async (params: ReceivePurchaseStockParams) => {
-    await receivePurchaseStock(params, user?.id || null);
+    await receivePurchaseStock(businessId, params.poId, params.items, params.notes ?? null, user?.id || null);
     addToast({
       type: 'success',
       title: 'Goods Received',
@@ -161,10 +173,17 @@ export function PurchasesPage() {
     reference_number?: string;
     notes?: string;
   }) => {
-    await recordPurchasePayment({
-      ...data,
-      created_by: user?.id || null,
-    });
+    await recordPurchasePayment(
+      businessId,
+      data.purchase_id,
+      {
+        amount: data.amount,
+        payment_method: data.payment_method,
+        reference_number: data.reference_number ?? null,
+        notes: data.notes ?? null,
+      },
+      user?.id || null
+    );
     addToast({
       type: 'success',
       title: 'Payment Recorded',
@@ -191,10 +210,21 @@ export function PurchasesPage() {
       reason?: string;
     }>;
   }) => {
-    await createPurchaseReturn(businessId, {
-      ...data,
-      created_by: user?.id || null,
-    });
+    await createPurchaseReturn(
+      businessId,
+      data.purchase_id,
+      data.items.map((it) => ({
+        item_id: it.purchase_item_id || '',
+        product_id: it.product_id || '',
+        product_name: it.product_name,
+        quantity: it.quantity_returned,
+        unit_cost: it.unit_cost,
+        reason: it.reason || data.reason,
+      })),
+      data.reason,
+      data.notes ?? null,
+      user?.id || null
+    );
     addToast({
       type: 'success',
       title: 'Debit Note Issued',

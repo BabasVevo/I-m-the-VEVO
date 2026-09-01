@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   Settings,
   Inbox,
+  ChevronRight,
 } from 'lucide-react';
 import { useNotifications } from '@/context/NotificationContext';
 import { NotificationItem } from '@/components/notifications/NotificationItem';

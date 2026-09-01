@@ -1,5 +1,5 @@
 import { format, parseISO } from 'date-fns';
-import type { PaymentMethod, PaymentStatus } from '@/types/database';
+import type { PaymentMethod, PaymentStatus, PurchaseOrderPaymentStatus } from '@/types/database';
 
 export function formatCurrency(amount: number, currency: string = 'BIF'): string {
   const safeAmount = isNaN(amount) ? 0 : amount;
@@ -108,6 +108,24 @@ export const PO_STATUS_CONFIG: Record<
     text: 'text-emerald-700 dark:text-emerald-300',
     dot: 'bg-emerald-500',
   },
+  pending_approval: {
+    label: 'Pending Approval',
+    bg: 'bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60',
+    text: 'text-amber-700 dark:text-amber-300',
+    dot: 'bg-amber-500',
+  },
+  approved: {
+    label: 'Approved',
+    bg: 'bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60',
+    text: 'text-blue-700 dark:text-blue-300',
+    dot: 'bg-blue-500',
+  },
+  rejected: {
+    label: 'Rejected',
+    bg: 'bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/60',
+    text: 'text-rose-700 dark:text-rose-300',
+    dot: 'bg-rose-500',
+  },
   cancelled: {
     label: 'Cancelled',
     bg: 'bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/60',
@@ -180,10 +198,41 @@ export const PAYMENT_STATUS_CONFIG: Record<
     text: 'text-purple-700 dark:text-purple-300',
     dot: 'bg-purple-500',
   },
+  partially_refunded: {
+    label: 'Partially Refunded',
+    bg: 'bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/60',
+    text: 'text-purple-700 dark:text-purple-300',
+    dot: 'bg-purple-500',
+  },
   cancelled: {
     label: 'Cancelled',
     bg: 'bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/60',
     text: 'text-rose-700 dark:text-rose-300',
     dot: 'bg-rose-500',
+  },
+};
+
+/** Badge styles for purchase-order payment status (unpaid / partial / paid). */
+export const PO_PAYMENT_STATUS_CONFIG: Record<
+  PurchaseOrderPaymentStatus,
+  { label: string; bg: string; text: string; dot: string }
+> = {
+  unpaid: {
+    label: 'Unpaid',
+    bg: 'bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/60',
+    text: 'text-rose-700 dark:text-rose-300',
+    dot: 'bg-rose-500',
+  },
+  partial: {
+    label: 'Partially Paid',
+    bg: 'bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60',
+    text: 'text-amber-700 dark:text-amber-300',
+    dot: 'bg-amber-500',
+  },
+  paid: {
+    label: 'Paid',
+    bg: 'bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60',
+    text: 'text-emerald-700 dark:text-emerald-300',
+    dot: 'bg-emerald-500',
   },
 };

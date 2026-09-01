@@ -90,17 +90,12 @@ export function CustomersPage() {
     setLoading(true);
     try {
       const [customersRes, statsRes, tagsRes, segmentsRes, branchesRes] = await Promise.all([
-        fetchCustomers({
-          businessId,
+        fetchCustomers(businessId, {
           search: search.trim() || undefined,
           customerType: selectedType !== 'all' ? selectedType : undefined,
           status: selectedStatus !== 'all' ? selectedStatus : undefined,
-          hasBalance: hasDebtOnly ? true : undefined,
+          hasBalanceOnly: hasDebtOnly ? true : undefined,
           tagId: selectedTagId !== 'all' ? selectedTagId : undefined,
-          sortBy,
-          sortOrder,
-          page,
-          pageSize,
         }),
         fetchCustomerStats(businessId),
         fetchTags(businessId),
@@ -108,8 +103,19 @@ export function CustomersPage() {
         fetchBranches(businessId),
       ]);
 
-      setCustomers(customersRes.customers || []);
-      setTotalCount(customersRes.totalCount || 0);
+      // Client-side sort + pagination (service returns the filtered full list)
+      const sorted = [...(customersRes || [])].sort((a, b) => {
+        const av = (a as unknown as Record<string, unknown>)[sortBy];
+        const bv = (b as unknown as Record<string, unknown>)[sortBy];
+        if (av == null && bv == null) return 0;
+        if (av == null) return 1;
+        if (bv == null) return -1;
+        const cmp = String(av).localeCompare(String(bv), undefined, { numeric: true });
+        return sortOrder === 'asc' ? cmp : -cmp;
+      });
+
+      setTotalCount(sorted.length);
+      setCustomers(sorted.slice((page - 1) * pageSize, page * pageSize));
       setStats(statsRes);
       setTags(tagsRes || []);
       setSegments(segmentsRes || []);
@@ -274,39 +280,49 @@ export function CustomersPage() {
       {/* Filter and Search Bar */}
       <CustomerFilterBar
         search={search}
-        selectedType={selectedType}
-        selectedStatus={selectedStatus}
+        customerType={selectedType}
+        status={selectedStatus}
+        selectedSegmentId="all"
         selectedTagId={selectedTagId}
-        hasDebtOnly={hasDebtOnly}
+        selectedBranchId=""
         sortBy={sortBy}
         sortOrder={sortOrder}
         viewMode={viewMode}
+        hasDebtOnly={hasDebtOnly}
         tags={tags}
+        branches={branches}
+        segments={segments}
         onSearchChange={(v) => {
           setSearch(v);
           setPage(1);
         }}
-        onTypeChange={(v) => {
-          setSelectedType(v);
+        onCustomerTypeChange={(v) => {
+          setSelectedType(v as CustomerType | 'all');
           setPage(1);
         }}
         onStatusChange={(v) => {
-          setSelectedStatus(v);
+          setSelectedStatus(v as CustomerStatus | 'all');
+          setPage(1);
+        }}
+        onSegmentChange={() => {
           setPage(1);
         }}
         onTagChange={(v) => {
           setSelectedTagId(v);
           setPage(1);
         }}
-        onDebtOnlyChange={(v) => {
-          setHasDebtOnly(v);
+        onBranchChange={() => {
           setPage(1);
         }}
-        onSortChange={(field, order) => {
-          setSortBy(field);
-          setSortOrder(order);
+        onSortByChange={(field) => {
+          setSortBy(field as typeof sortBy);
         }}
+        onToggleSortOrder={() => setSortOrder((o) => (o === 'asc' ? 'desc' : 'asc'))}
         onViewModeChange={setViewMode}
+        onToggleHasDebtOnly={() => {
+          setHasDebtOnly((d) => !d);
+          setPage(1);
+        }}
         onResetFilters={() => {
           setSearch('');
           setSelectedType('all');
@@ -317,6 +333,21 @@ export function CustomersPage() {
           setSortOrder('asc');
           setPage(1);
         }}
+        hasActiveFilters={
+          search !== '' || selectedType !== 'all' || selectedStatus !== 'all' || selectedTagId !== 'all' || hasDebtOnly
+        }
+        totalFiltered={totalCount}
+        totalAll={stats.totalCustomers}
+        onOpenCreate={handleOpenCreateModal}
+        onOpenExport={() => {
+          setExportImportMode('export');
+          setIsExportImportModalOpen(true);
+        }}
+        onOpenImport={() => {
+          setExportImportMode('import');
+          setIsExportImportModalOpen(true);
+        }}
+        onOpenTagsModal={() => setIsTagsModalOpen(true)}
       />
 
       {/* Customers List (Table or Grid) */}

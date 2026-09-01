@@ -33,7 +33,7 @@ export function CustomerSelectModal({
     setLoading(true);
 
     const timer = setTimeout(async () => {
-      const list = await fetchCustomers(businessId, search);
+      const list = await fetchCustomers(businessId, { search: search || undefined });
       if (isMounted) {
         setCustomers(list);
         setLoading(false);

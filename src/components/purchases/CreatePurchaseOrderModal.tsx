@@ -96,7 +96,7 @@ export function CreatePurchaseOrderModal({
     try {
       const [supRes, prodRes] = await Promise.all([
         fetchSuppliers(businessId, { pageSize: 200 }),
-        fetchProducts({ pageSize: 500 }),
+        fetchProducts(businessId, { pageSize: 500 }),
       ]);
       setSuppliers(supRes.suppliers);
       setProducts(prodRes.products);

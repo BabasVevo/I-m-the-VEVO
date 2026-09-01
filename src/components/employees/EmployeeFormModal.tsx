@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, User, Mail, Phone, Shield, Building2, Calendar, HeartHandshake, Check } from 'lucide-react';
-import type { Employee, Branch, Role, CreateEmployeeInput } from '@/types/database';
+import type { Employee, Branch, Role } from '@/types/database';
+import type { CreateEmployeeInput } from '@/services/employeeService';
 
 interface EmployeeFormModalProps {
   isOpen: boolean;

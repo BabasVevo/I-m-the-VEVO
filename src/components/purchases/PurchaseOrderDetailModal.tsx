@@ -15,7 +15,7 @@ import {
   formatDate,
   formatDateTime,
   PO_STATUS_CONFIG,
-  PAYMENT_STATUS_CONFIG,
+  PO_PAYMENT_STATUS_CONFIG,
   PAYMENT_TERMS_LABELS,
   PAYMENT_METHOD_LABELS,
 } from '@/lib/format';
@@ -46,7 +46,7 @@ export function PurchaseOrderDetailModal({
   if (!isOpen || !purchaseOrder) return null;
 
   const poStatus = PO_STATUS_CONFIG[purchaseOrder.status] || PO_STATUS_CONFIG.draft;
-  const payStatus = PAYMENT_STATUS_CONFIG[purchaseOrder.payment_status] || PAYMENT_STATUS_CONFIG.pending;
+  const payStatus = PO_PAYMENT_STATUS_CONFIG[purchaseOrder.payment_status] || PO_PAYMENT_STATUS_CONFIG.unpaid;
 
   const canReceive =
     purchaseOrder.status !== 'cancelled' &&
@@ -286,7 +286,7 @@ export function PurchaseOrderDetailModal({
                             {formatCurrency(item.unit_cost, currency)}
                           </td>
                           <td className="p-3 text-right font-bold text-gray-900 dark:text-white">
-                            {formatCurrency(item.total_cost, currency)}
+                            {formatCurrency(item.line_total, currency)}
                           </td>
                         </tr>
                       );
@@ -415,7 +415,7 @@ export function PurchaseOrderDetailModal({
                             {ret.reason}
                           </td>
                           <td className="p-3 text-right font-bold text-rose-600 dark:text-rose-400">
-                            {formatCurrency(ret.total_amount, currency)}
+                            {formatCurrency(ret.total_refund_amount, currency)}
                           </td>
                         </tr>
                       ))}

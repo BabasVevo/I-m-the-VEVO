@@ -1,8 +1,62 @@
 import { useState, useEffect } from 'react';
-import { UserCircle, X, Sliders } from 'lucide-react';
-import type { CustomerSegment, SegmentRules, CustomerType, Tag, Branch } from '@/types/database';
+import { UserCircle, X, Sliders, AlertCircle } from 'lucide-react';
+import type { CustomerSegment, SegmentRules, SegmentRuleCondition, CustomerType, Tag, Branch } from '@/types/database';
 import { createSegment, updateSegment } from '@/services/customerService';
 import { useToast } from '@/context/ToastContext';
+
+/** Convert the flat editor rule fields to the stored condition-array format. */
+function rulesToConditions(rules: SegmentRules): SegmentRuleCondition[] {
+  const conditions: SegmentRuleCondition[] = [];
+  if (rules.min_total_spent !== undefined) conditions.push({ field: 'total_spent', operator: 'greater_or_equal', value: rules.min_total_spent });
+  if (rules.max_total_spent !== undefined) conditions.push({ field: 'total_spent', operator: 'less_or_equal', value: rules.max_total_spent });
+  if (rules.min_total_orders !== undefined) conditions.push({ field: 'total_orders', operator: 'greater_or_equal', value: rules.min_total_orders });
+  if (rules.max_total_orders !== undefined) conditions.push({ field: 'total_orders', operator: 'less_or_equal', value: rules.max_total_orders });
+  if (rules.days_since_last_purchase !== undefined) conditions.push({ field: 'last_purchase_days', operator: 'greater_or_equal', value: rules.days_since_last_purchase });
+  if (rules.has_outstanding_balance !== undefined) {
+    conditions.push({
+      field: 'credit_balance',
+      operator: rules.has_outstanding_balance ? 'greater_than' : 'equals',
+      value: rules.has_outstanding_balance ? 0 : 0,
+    });
+  }
+  if (rules.customer_types && rules.customer_types.length > 0) conditions.push({ field: 'customer_type', operator: 'in', value: rules.customer_types });
+  if (rules.tag_ids) {
+    rules.tag_ids.forEach((tagId) => conditions.push({ field: 'has_tag', operator: 'equals', value: tagId }));
+  }
+  if (rules.branch_id) conditions.push({ field: 'assigned_branch_id', operator: 'equals', value: rules.branch_id });
+  return conditions;
+}
+
+/** Parse stored conditions back into the flat editor rule fields. */
+function conditionsToRules(conditions: SegmentRuleCondition[] | null | undefined): SegmentRules {
+  const rules: SegmentRules = {};
+  const tagIds: string[] = [];
+  const customerTypes: string[] = [];
+  (conditions || []).forEach((c) => {
+    if (c.field === 'total_spent') {
+      if (c.operator === 'greater_or_equal') rules.min_total_spent = Number(c.value);
+      else if (c.operator === 'less_or_equal') rules.max_total_spent = Number(c.value);
+    } else if (c.field === 'total_orders') {
+      if (c.operator === 'greater_or_equal') rules.min_total_orders = Number(c.value);
+      else if (c.operator === 'less_or_equal') rules.max_total_orders = Number(c.value);
+    } else if (c.field === 'last_purchase_days' && c.operator === 'greater_or_equal') {
+      rules.days_since_last_purchase = Number(c.value);
+    } else if (c.field === 'credit_balance') {
+      if (c.operator === 'greater_than') rules.has_outstanding_balance = true;
+      else if (c.operator === 'equals') rules.has_outstanding_balance = false;
+    } else if (c.field === 'customer_type') {
+      if (Array.isArray(c.value)) customerTypes.push(...(c.value as string[]).map(String));
+      else customerTypes.push(String(c.value));
+    } else if (c.field === 'has_tag') {
+      tagIds.push(String(c.value));
+    } else if (c.field === 'assigned_branch_id') {
+      rules.branch_id = String(c.value);
+    }
+  });
+  if (tagIds.length > 0) rules.tag_ids = tagIds;
+  if (customerTypes.length > 0) rules.customer_types = customerTypes;
+  return rules;
+}
 
 interface SegmentCreateEditModalProps {
   isOpen: boolean;
@@ -38,7 +92,6 @@ export function SegmentCreateEditModal({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [color, setColor] = useState('#10b981');
-  const [icon, setIcon] = useState('users');
 
   // Rules
   const [minSpend, setMinSpend] = useState('');
@@ -59,23 +112,21 @@ export function SegmentCreateEditModal({
       setName(segmentToEdit.name);
       setDescription(segmentToEdit.description || '');
       setColor(segmentToEdit.color || '#10b981');
-      setIcon(segmentToEdit.icon || 'users');
 
-      const r = segmentToEdit.rules || {};
+      const r = conditionsToRules(segmentToEdit.rules);
       setMinSpend(r.min_total_spent !== undefined ? String(r.min_total_spent) : '');
       setMaxSpend(r.max_total_spent !== undefined ? String(r.max_total_spent) : '');
       setMinOrders(r.min_total_orders !== undefined ? String(r.min_total_orders) : '');
       setMaxOrders(r.max_total_orders !== undefined ? String(r.max_total_orders) : '');
       setDaysInactive(r.days_since_last_purchase !== undefined ? String(r.days_since_last_purchase) : '');
       setHasDebt(r.has_outstanding_balance !== undefined ? r.has_outstanding_balance : null);
-      setCustomerTypes(r.customer_types || []);
+      setCustomerTypes((r.customer_types || []) as CustomerType[]);
       setSelectedTagIds(r.tag_ids || []);
       setSelectedBranchId(r.branch_id || '');
     } else {
       setName('');
       setDescription('');
       setColor('#10b981');
-      setIcon('users');
       setMinSpend('');
       setMaxSpend('');
       setMinOrders('');
@@ -125,13 +176,14 @@ export function SegmentCreateEditModal({
       if (selectedTagIds.length > 0) rules.tag_ids = selectedTagIds;
       if (selectedBranchId) rules.branch_id = selectedBranchId;
 
+      const conditions = rulesToConditions(rules);
+
       if (isEditing && segmentToEdit) {
         await updateSegment(segmentToEdit.id, {
           name: name.trim(),
           description: description.trim() || undefined,
           color,
-          icon,
-          rules,
+          rules: conditions,
         });
 
         addToast({
@@ -140,13 +192,14 @@ export function SegmentCreateEditModal({
           message: `Customer segment "${name}" updated.`,
         });
       } else {
-        await createSegment({
-          business_id: businessId,
+        await createSegment(businessId, {
           name: name.trim(),
           description: description.trim() || undefined,
           color,
-          icon,
-          rules,
+          rules: conditions,
+          segment_type: 'custom',
+          is_active: true,
+          conditions_logic: 'AND',
         });
 
         addToast({
@@ -267,7 +320,7 @@ export function SegmentCreateEditModal({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-semibold text-gray-600 dark:text-gray-400">
-                    Min Total Spend (TZS)
+                    Min Total Spend (BIF)
                   </label>
                   <input
                     type="number"
@@ -280,7 +333,7 @@ export function SegmentCreateEditModal({
                 </div>
                 <div>
                   <label className="block text-[11px] font-semibold text-gray-600 dark:text-gray-400">
-                    Max Total Spend (TZS)
+                    Max Total Spend (BIF)
                   </label>
                   <input
                     type="number"

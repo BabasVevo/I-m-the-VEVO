@@ -15,6 +15,7 @@ import type {
   CustomerPurchasedProduct,
   CustomerBranchHistory,
   CustomerStatsSummary,
+  CustomerStats,
   Sale,
 } from '@/types/database';
 
@@ -1452,7 +1453,7 @@ export async function saveSegmentSettings(
 export function evaluateCustomerForSegment(
   customer: Customer,
   segment: CustomerSegment,
-  settings: SegmentSettings
+  settings: SegmentSettings = DEFAULT_SEGMENT_SETTINGS
 ): boolean {
   if (segment.id === 'seg-all' || segment.rules.length === 0) return true;
 
@@ -1529,6 +1530,10 @@ export function evaluateCustomerForSegment(
         return Number(targetVal) <= Number(val);
       case 'contains':
         return String(targetVal).toLowerCase().includes(String(val).toLowerCase());
+      case 'in':
+        return Array.isArray(rule.value)
+          ? rule.value.map(String).includes(String(targetVal))
+          : String(targetVal) === String(val);
       default:
         return false;
     }
@@ -1576,7 +1581,7 @@ export async function fetchSegments(businessId: string): Promise<CustomerSegment
 
 export async function createCustomSegment(
   businessId: string,
-  data: Omit<CustomerSegment, 'id' | 'created_at' | 'updated_at' | 'customer_count'>
+  data: Omit<CustomerSegment, 'id' | 'business_id' | 'created_at' | 'updated_at' | 'customer_count'>
 ): Promise<CustomerSegment> {
   const newSegment: CustomerSegment = {
     id: `seg-${Date.now()}`,
@@ -1676,9 +1681,8 @@ export async function updateSegment(
 
 export async function fetchCustomerStats(businessId: string): Promise<CustomerStats> {
   const crm = await fetchCrmDashboardStats(businessId);
-  const custRes = await fetchCustomers({ businessId, pageSize: 500 });
-  const customers = custRes.customers || [];
-  const debtors = customers.filter(c => (c.current_balance || 0) > 0);
+  const customers = await fetchCustomers(businessId);
+  const debtors = customers.filter((c: Customer) => (c.current_balance || 0) > 0);
   
   return {
     totalCustomers: crm.summary.total_customers,
@@ -1790,7 +1794,8 @@ export async function fetchCrmDashboardStats(businessId: string): Promise<{
 // ----------------------------------------------------
 // 8. Export to CSV
 // ----------------------------------------------------
-export function exportCustomersToCSV(customers: Customer[], currency = 'TZS'): void {
+/** Build the customer directory CSV as a plain string (no download). */
+export function buildCustomersCsv(customers: Customer[], currency = 'BIF'): string {
   const headers = [
     'Customer ID',
     'Full Name',
@@ -1831,8 +1836,12 @@ export function exportCustomersToCSV(customers: Customer[], currency = 'TZS'): v
     new Date(c.created_at).toLocaleDateString(),
   ]);
 
-  const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
-  const encodedUri = encodeURI(csvContent);
+  return [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+}
+
+export function exportCustomersToCSV(customers: Customer[], currency = 'BIF'): void {
+  const csv = buildCustomersCsv(customers, currency);
+  const encodedUri = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
   const link = document.createElement('a');
   link.setAttribute('href', encodedUri);
   link.setAttribute('download', `customers_export_${new Date().toISOString().slice(0, 10)}.csv`);

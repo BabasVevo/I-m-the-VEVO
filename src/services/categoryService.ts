@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
-import type { Category } from '@/types/database';
+import type { Category, Product, InventoryItem } from '@/types/database';
 
 export const DEMO_CATEGORIES_KEY = 'verdant_demo_categories_v3';
 

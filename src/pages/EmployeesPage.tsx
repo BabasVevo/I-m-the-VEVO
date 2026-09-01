@@ -11,7 +11,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
-import type { Employee, Role, Branch, EmployeeStats, CreateEmployeeInput } from '@/types/database';
+import type { Employee, Role, Branch, EmployeeStats } from '@/types/database';
+import type { CreateEmployeeInput } from '@/services/employeeService';
 import {
   getEmployees,
   getRoles,

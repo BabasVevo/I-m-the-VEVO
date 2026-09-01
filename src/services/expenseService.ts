@@ -986,12 +986,40 @@ export async function fetchExpenseStats(
     .filter((e) => e.expense_date.startsWith(currentMonthPrefix) && (e.status === 'paid' || e.status === 'approved'))
     .reduce((sum, e) => sum + (e.amount || 0), 0);
 
+  const settled = expenses.filter((e) => e.status === 'paid' || e.status === 'approved');
+  const totalExpenses = settled.reduce((sum, e) => sum + (e.amount || 0), 0);
+
+  const byCategory: { category_id: string; name: string; amount: number; count: number }[] = [];
+  for (const e of settled) {
+    const existing = byCategory.find((c) => c.category_id === e.category_id);
+    if (existing) {
+      existing.amount += e.amount || 0;
+      existing.count += 1;
+    } else {
+      byCategory.push({
+        category_id: e.category_id,
+        name: (e.category as { name?: string } | null | undefined)?.name || 'Uncategorized',
+        amount: e.amount || 0,
+        count: 1,
+      });
+    }
+  }
+  byCategory.sort((a, b) => b.amount - a.amount);
+
+  const recurring = await fetchRecurringExpenses(businessId, branchId);
+  const activeRecurringCount = recurring.filter((r) => r.is_active).length;
+
   return {
     totalExpensesToday,
     totalExpensesThisMonth,
     pendingApprovalCount,
     pendingApprovalAmount,
     approvedPaidThisMonth,
+    thisMonthExpenses: totalExpensesThisMonth,
+    totalExpenses,
+    expensesCount: settled.length,
+    activeRecurringCount,
+    byCategory,
   };
 }
 
@@ -1018,7 +1046,7 @@ export function exportExpensesToCSV(expenses: Expense[]) {
     e.tax_amount || 0,
     e.payment_method,
     e.status,
-    `"${(e.payee || e.vendor_name || '').replace(/"/g, '""')}"`,
+    `"${(e.payee || '').replace(/"/g, '""')}"`,
     `"${(e.reference_number || '').replace(/"/g, '""')}"`,
   ]);
 

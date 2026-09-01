@@ -103,7 +103,6 @@ export function BarcodeScannerModal({
 
   const handleTestBarcodeClick = (sampleCode: string) => {
     playPosBeep('success');
-    setLastScanned(sampleCode);
     onScan(sampleCode);
     onClose();
   };

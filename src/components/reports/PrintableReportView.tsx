@@ -190,14 +190,14 @@ export function PrintableReportView({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {inventoryData.valuationByCategory.map((cat) => (
+              {inventoryData.categoryValuations.map((cat) => (
                 <tr key={cat.categoryId}>
                   <td className="py-1.5 font-medium">{cat.categoryName}</td>
-                  <td className="py-1.5 text-center">{cat.productsCount}</td>
-                  <td className="py-1.5 text-center">{cat.totalQuantity}</td>
+                  <td className="py-1.5 text-center">{cat.productCount}</td>
+                  <td className="py-1.5 text-center">{cat.totalUnits}</td>
                   <td className="py-1.5 text-right">{formatCurrency(cat.costValue, currency)}</td>
                   <td className="py-1.5 text-right font-semibold">{formatCurrency(cat.retailValue, currency)}</td>
-                  <td className="py-1.5 text-right">{cat.marginPercentage.toFixed(1)}%</td>
+                  <td className="py-1.5 text-right">{cat.marginPercent.toFixed(1)}%</td>
                 </tr>
               ))}
             </tbody>
@@ -221,7 +221,7 @@ export function PrintableReportView({
             <tbody className="divide-y divide-gray-200">
               {expenseData.byCategory.map((cat) => (
                 <tr key={cat.categoryId}>
-                  <td className="py-1.5 font-medium">{cat.categoryName}</td>
+                  <td className="py-1.5 font-medium">{cat.name}</td>
                   <td className="py-1.5 text-center">{cat.count}</td>
                   <td className="py-1.5 text-right font-semibold">{formatCurrency(cat.amount, currency)}</td>
                   <td className="py-1.5 text-right">{cat.percentage.toFixed(1)}%</td>
@@ -250,10 +250,10 @@ export function PrintableReportView({
               {purchaseData.bySupplier.map((sup) => (
                 <tr key={sup.supplierId}>
                   <td className="py-1.5 font-medium">{sup.supplierName}</td>
-                  <td className="py-1.5 text-center">{sup.orderCount}</td>
+                  <td className="py-1.5 text-center">{sup.ordersCount}</td>
                   <td className="py-1.5 text-right font-semibold">{formatCurrency(sup.totalAmount, currency)}</td>
                   <td className="py-1.5 text-right text-emerald-700">{formatCurrency(sup.paidAmount, currency)}</td>
-                  <td className="py-1.5 text-right text-rose-700 font-bold">{formatCurrency(sup.balanceDue, currency)}</td>
+                  <td className="py-1.5 text-right text-rose-700 font-bold">{formatCurrency(sup.dueAmount, currency)}</td>
                 </tr>
               ))}
             </tbody>

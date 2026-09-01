@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
-import type { Sale, InventoryItem, SalesTarget, Branch } from '@/types/database';
+import type { Sale, InventoryItem, SalesTarget, Branch, Product } from '@/types/database';
 
 export interface DashboardStatsResult {
   salesToday: number;

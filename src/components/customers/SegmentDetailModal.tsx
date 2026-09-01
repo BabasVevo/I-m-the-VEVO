@@ -6,7 +6,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import type { CustomerSegment, Customer } from '@/types/database';
-import { fetchCustomers, evaluateCustomerForSegment, exportCustomersToCSV } from '@/services/customerService';
+import { fetchCustomers, evaluateCustomerForSegment, buildCustomersCsv } from '@/services/customerService';
 import { formatCurrency } from '@/lib/format';
 import { useToast } from '@/context/ToastContext';
 
@@ -35,8 +35,8 @@ export function SegmentDetailModal({
     if (!segment) return;
     setLoading(true);
     try {
-      const res = await fetchCustomers({ businessId, pageSize: 200 });
-      const filtered = (res.customers || []).filter((c) => evaluateCustomerForSegment(c, segment));
+      const res = await fetchCustomers(businessId);
+      const filtered = (res || []).filter((c) => evaluateCustomerForSegment(c, segment));
       setMatchedCustomers(filtered);
     } catch (err) {
       console.error('Error calculating segment members:', err);
@@ -54,7 +54,7 @@ export function SegmentDetailModal({
 
   const handleExportAudience = () => {
     try {
-      const csv = exportCustomersToCSV(matchedCustomers, currency);
+      const csv = buildCustomersCsv(matchedCustomers, currency);
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -94,7 +94,7 @@ export function SegmentDetailModal({
                 <h3 className="text-base font-bold text-navy-900 dark:text-white">
                   {segment.name}
                 </h3>
-                {segment.is_system && (
+                {segment.segment_type === 'system' && (
                   <span className="rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 dark:bg-navy-800 dark:text-gray-400">
                     System Default
                   </span>

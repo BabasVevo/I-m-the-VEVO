@@ -149,11 +149,11 @@ export function RecurringExpensesModal({
                       {rec.title}
                     </span>
                     <span className="rounded-md bg-purple-50 px-2 py-0.5 text-2xs font-semibold text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 capitalize">
-                      {rec.recurrence_interval}
+                      {rec.frequency}
                     </span>
                   </div>
                   <div className="mt-1 flex items-center gap-3 text-2xs text-gray-500 dark:text-gray-400">
-                    <span>Vendor: {rec.vendor_name || '—'}</span>
+                    <span>Vendor: {rec.payee || '—'}</span>
                     <span>Next Due: {formatDate(rec.next_due_date)}</span>
                   </div>
                 </div>

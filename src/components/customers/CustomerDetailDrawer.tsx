@@ -808,9 +808,8 @@ export function CustomerDetailDrawer({
           <ReceiptModal
             isOpen={Boolean(selectedReceiptSale)}
             sale={selectedReceiptSale}
-            business={null}
-            settings={receiptSettings}
             currency={currency}
+            onNewSale={() => setSelectedReceiptSale(null)}
             onClose={() => setSelectedReceiptSale(null)}
           />
         )}

@@ -170,11 +170,11 @@ function AppRoutes() {
         } />
 
         <Route path="/branches" element={
-          <PermissionGuard permission="branches.manage"><BranchesPage /></PermissionGuard>
+          <PermissionGuard permission="branches.view"><BranchesPage /></PermissionGuard>
         } />
 
         <Route path="/locations" element={
-          <PermissionGuard permission="branches.manage"><BranchesPage /></PermissionGuard>
+          <PermissionGuard permission="branches.view"><BranchesPage /></PermissionGuard>
         } />
 
         {/* All other nav placeholder pages */}

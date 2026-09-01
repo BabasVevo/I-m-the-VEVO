@@ -55,15 +55,12 @@ export function SupplierDetailDrawer({
 
   const loadData = async (id: string) => {
     try {
-      setLoading(true);
       const res = await fetchSupplierById(id);
       setSupplier(res.supplier);
       setNotes(res.notes);
       setPurchases(res.purchases);
     } catch (err) {
       console.error('Error loading supplier details:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
