@@ -259,7 +259,7 @@ export function ProductFormModal({
                   type="text"
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
-                  placeholder="e.g. Kilimanjaro Estate"
+                  placeholder="e.g. Kibira Estate"
                   className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-navy-900 outline-hidden transition focus:border-brand-500 focus:bg-white dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                 />
               </div>

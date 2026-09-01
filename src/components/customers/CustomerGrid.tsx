@@ -111,7 +111,7 @@ export function CustomerGrid({
                 {c.city && (
                   <div className="flex items-center gap-2">
                     <MapPin className="h-3.5 w-3.5 text-gray-400" />
-                    <span>{c.city}, {c.country || 'Tanzania'}</span>
+                    <span>{c.city}, {c.country || 'Burundi'}</span>
                   </div>
                 )}
               </div>

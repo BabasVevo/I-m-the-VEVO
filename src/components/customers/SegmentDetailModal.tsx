@@ -23,7 +23,7 @@ export function SegmentDetailModal({
   isOpen,
   segment,
   businessId,
-  currency = 'TZS',
+  currency = 'BIF',
   onClose,
   onViewCustomerProfile,
 }: SegmentDetailModalProps) {

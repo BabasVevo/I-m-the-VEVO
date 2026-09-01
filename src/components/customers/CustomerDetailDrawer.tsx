@@ -223,7 +223,7 @@ export function CustomerDetailDrawer({
                   {customerData.city && (
                     <span className="flex items-center gap-1">
                       <MapPin className="h-3.5 w-3.5 text-gray-400" />
-                      <span>{customerData.city}, {customerData.country || 'Tanzania'}</span>
+                      <span>{customerData.city}, {customerData.country || 'Burundi'}</span>
                     </span>
                   )}
                 </div>
@@ -446,7 +446,7 @@ export function CustomerDetailDrawer({
                     <div className="flex items-center justify-between">
                       <span className="text-gray-500">City & Country:</span>
                       <span className="font-semibold text-navy-900 dark:text-white">
-                        {customerData.city || 'Dar es Salaam'}, {customerData.country || 'Tanzania'}
+                        {customerData.city || 'Bujumbura'}, {customerData.country || 'Burundi'}
                       </span>
                     </div>
                   </div>
@@ -777,7 +777,7 @@ export function CustomerDetailDrawer({
                 <div className="mt-3 flex flex-wrap gap-2">
                   {customerData.phone && (
                     <a
-                      href={`https://wa.me/${customerData.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(customerData.name)},%20thank%20you%20for%20choosing%20Verdant!`}
+                      href={`https://wa.me/${customerData.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(customerData.name)},%20thank%20you%20for%20choosing%20BABAS!`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"

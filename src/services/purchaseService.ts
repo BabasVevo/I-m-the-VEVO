@@ -35,7 +35,7 @@ export const INITIAL_DEMO_PURCHASES: PurchaseOrder[] = [
     grand_total: 4248000,
     paid_amount: 2448000,
     due_amount: 1800000,
-    notes: 'Urgent restocking for Kilimanjaro Arabica coffee beans.',
+    notes: 'Urgent restocking for Burundi Arabica coffee beans.',
     receiving_notes: 'All 200 bags received in good condition.',
     created_by: 'demo-user-1',
     received_at: new Date(Date.now() - 4 * 86400000).toISOString(),
@@ -78,7 +78,7 @@ export const INITIAL_DEMO_PURCHASES: PurchaseOrder[] = [
     grand_total: 1121000,
     paid_amount: 0,
     due_amount: 1121000,
-    notes: 'Direct delivery to Masaki branch warehouse.',
+    notes: 'Direct delivery to Rumonge branch warehouse.',
     created_by: 'demo-user-1',
     created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
     updated_at: new Date(Date.now() - 2 * 86400000).toISOString(),
@@ -218,7 +218,7 @@ export function getStoredPurchasePayments(): PurchasePayment[] {
           amount: 2448000,
           payment_method: 'bank_transfer',
           payment_date: new Date(Date.now() - 4 * 86400000).toISOString(),
-          reference_number: 'NMB-TRX-994821',
+          reference_number: 'BCB-TRX-994821',
           notes: 'Advance deposit upon shipment arrival',
           created_by: 'demo-user-1',
           created_at: new Date(Date.now() - 4 * 86400000).toISOString(),
@@ -231,7 +231,7 @@ export function getStoredPurchasePayments(): PurchasePayment[] {
           amount: 1305000,
           payment_method: 'bank_transfer',
           payment_date: new Date(Date.now() - 7 * 86400000).toISOString(),
-          reference_number: 'CRDB-TX-811902',
+          reference_number: 'SOGEB-TX-811902',
           notes: 'First installment payment for 30 receipt roll boxes',
           created_by: 'demo-user-1',
           created_at: new Date(Date.now() - 7 * 86400000).toISOString(),
@@ -834,7 +834,7 @@ export async function recordPurchasePayment(
     throw new Error('Payment amount must be greater than 0');
   }
   if (payAmount > po.due_amount + 0.01) {
-    throw new Error(`Payment amount (TZS ${payAmount.toLocaleString()}) cannot exceed remaining balance (TZS ${po.due_amount.toLocaleString()})`);
+    throw new Error(`Payment amount (BIF ${payAmount.toLocaleString()}) cannot exceed remaining balance (BIF ${po.due_amount.toLocaleString()})`);
   }
 
   const now = new Date().toISOString();

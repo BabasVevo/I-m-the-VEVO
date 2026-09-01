@@ -182,7 +182,7 @@ export function PurchaseOrderDetailModal({
                 {purchaseOrder.branch?.name || 'Downtown Flagship'}
               </p>
               <p className="text-gray-600 dark:text-gray-400 mt-0.5">
-                Address: {purchaseOrder.branch?.address || '14 Kivukoni Front, Dar es Salaam'}
+                Address: {purchaseOrder.branch?.address || 'Boulevard du 1er Novembre, Rohero, Bujumbura, Burundi'}
               </p>
               <p className="text-gray-500 dark:text-gray-400 mt-1">
                 Order Date: {formatDate(purchaseOrder.order_date)}

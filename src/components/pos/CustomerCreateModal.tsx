@@ -138,7 +138,7 @@ export function CustomerCreateModal({
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="+255 7XX XXX XXX"
+                placeholder="+257 7XX XXX XXX"
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-xs font-medium text-navy-900 outline-hidden transition focus:border-brand-500 focus:bg-white dark:border-navy-700 dark:bg-navy-950 dark:text-white"
               />
             </div>

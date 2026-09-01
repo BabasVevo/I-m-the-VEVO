@@ -281,7 +281,7 @@ export function ExpenseFormModal({
                 className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
               >
                 <option value="mobile_money">Mobile Money (M-Pesa / TigoPesa)</option>
-                <option value="bank_transfer">Bank Transfer (CRDB / NMB)</option>
+                <option value="bank_transfer">Bank Transfer (BCB / SOGEB)</option>
                 <option value="cash">Petty Cash</option>
                 <option value="card">Company Debit/Credit Card</option>
                 <option value="other">Other</option>
