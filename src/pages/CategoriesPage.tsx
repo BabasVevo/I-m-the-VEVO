@@ -70,10 +70,7 @@ export function CategoriesPage() {
       await updateCategory(editingCategory.id, data);
       addToast('success', `Category "${data.name}" updated.`);
     } else {
-      await createCategory({
-        business_id: businessId,
-        ...data,
-      });
+      await createCategory(businessId, data);
       addToast('success', `Category "${data.name}" created.`);
     }
     loadData();

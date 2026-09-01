@@ -244,7 +244,7 @@ export function SupplierList({
                     </td>
 
                     <td className="px-4 py-3.5 text-2xs text-gray-600 dark:text-gray-400">
-                      {supplier.city || 'Tanzania'}
+                      {supplier.city || 'Burundi'}
                     </td>
 
                     <td className="px-4 py-3.5 text-right font-medium text-gray-900 dark:text-white">

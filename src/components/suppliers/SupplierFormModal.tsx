@@ -67,7 +67,7 @@ export function SupplierFormModal({
       setEmail('');
       setAddress('');
       setCity('');
-      setCountry('Tanzania');
+      setCountry('Burundi');
       setPaymentTerms('net_30');
       setCreditLimit(0);
       setAssignedBranchId('');
@@ -100,7 +100,7 @@ export function SupplierFormModal({
         email: email.trim() || null,
         address: address.trim() || null,
         city: city.trim() || null,
-        country: country.trim() || 'Tanzania',
+        country: country.trim() || 'Burundi',
         payment_terms: paymentTerms,
         credit_limit: Number(creditLimit) || 0,
         assigned_branch_id: assignedBranchId || null,
@@ -167,7 +167,7 @@ export function SupplierFormModal({
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Kilimanjaro Coffee Plantations Ltd"
+                  placeholder="e.g. Kibungo Coffee & Grains Ltd"
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                 />
               </div>
@@ -341,7 +341,7 @@ export function SupplierFormModal({
 
               <div>
                 <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                  Credit Limit (TZS)
+                  Credit Limit (BIF)
                 </label>
                 <input
                   type="number"
@@ -397,7 +397,7 @@ export function SupplierFormModal({
                   rows={3}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="e.g. Free delivery on orders over 5M TZS. Key contact prefers WhatsApp."
+                  placeholder="e.g. Free delivery on orders over 5M BIF. Key contact prefers WhatsApp."
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                 />
               </div>

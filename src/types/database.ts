@@ -273,7 +273,7 @@ export interface StockMovement {
   creator?: Profile | null;
 }
 
-export type CustomerType = 'regular' | 'vip' | 'wholesale' | 'business' | 'walk_in';
+export type CustomerType = 'regular' | 'vip' | 'wholesale' | 'business' | 'walk_in' | 'corporate';
 export type CustomerStatus = 'active' | 'inactive' | 'archived';
 export type CustomerGender = 'male' | 'female' | 'other';
 
@@ -296,7 +296,7 @@ export interface CustomerTagAssignment {
   created_at: string;
 }
 
-export type CustomerNoteType = 'general' | 'preference' | 'special_request' | 'follow_up' | 'relationship';
+export type CustomerNoteType = 'general' | 'preference' | 'special_request' | 'follow_up' | 'relationship' | 'pinned';
 
 export interface CustomerNote {
   id: string;
@@ -306,6 +306,7 @@ export interface CustomerNote {
   author?: Profile | null;
   content: string;
   note_type: CustomerNoteType;
+  is_pinned?: boolean | null;
   created_at: string;
   updated_at: string;
 }
@@ -320,7 +321,8 @@ export type CustomerActivityType =
   | 'tag_removed'
   | 'segment_change'
   | 'status_change'
-  | 'balance_adjusted';
+  | 'balance_adjusted'
+  | 'credit_adjustment';
 
 export interface CustomerActivity {
   id: string;
@@ -358,12 +360,29 @@ export interface CustomerSegment {
   description?: string | null;
   segment_type: 'system' | 'custom';
   color: string;
+  icon?: string | null;
   is_active: boolean;
   conditions_logic: 'AND' | 'OR';
   rules: SegmentRuleCondition[];
   customer_count?: number;
   created_at: string;
   updated_at: string;
+}
+
+/**
+ * Flat rule shape used by the segment editor UI.
+ * Converted to/from SegmentRuleCondition[] (the stored format).
+ */
+export interface SegmentRules {
+  min_total_spent?: number;
+  max_total_spent?: number;
+  min_total_orders?: number;
+  max_total_orders?: number;
+  days_since_last_purchase?: number;
+  has_outstanding_balance?: boolean;
+  customer_types?: string[];
+  tag_ids?: string[];
+  branch_id?: string | null;
 }
 
 export interface SegmentSettings {
@@ -645,12 +664,28 @@ export interface SupplierStats {
 
 export type PurchaseOrderStatus =
   | 'draft'
+  | 'pending_approval'
+  | 'approved'
+  | 'rejected'
   | 'ordered'
   | 'partially_received'
   | 'received'
   | 'cancelled';
 
 export type PurchaseOrderPaymentStatus = 'unpaid' | 'partial' | 'paid';
+
+/** Parameters for receiving stock against a purchase order (UI layer). */
+export interface ReceivePurchaseStockParams {
+  poId: string;
+  items: Array<{
+    item_id: string;
+    product_id?: string | null;
+    product_name: string;
+    quantity_to_receive: number;
+    quantity_damaged?: number;
+  }>;
+  notes?: string | null;
+}
 
 export interface PurchaseOrderItem {
   id: string;
@@ -714,6 +749,7 @@ export interface PurchaseOrder {
   creator?: Profile | null;
   items?: PurchaseOrderItem[];
   payments?: PurchasePayment[];
+  returns?: PurchaseReturn[];
 }
 
 export interface PurchaseReturnItem {
@@ -777,6 +813,8 @@ export type ExpenseStatus =
   | 'rejected'
   | 'paid';
 
+export type RecurrenceInterval = 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+
 export interface ExpenseAttachment {
   id: string;
   expense_id: string;
@@ -810,6 +848,9 @@ export interface Expense {
   register_session_id?: string | null;
   notes: string | null;
   created_by: string | null;
+  /** UI convenience fields (recurring profile linkage); not persisted on the base table */
+  is_recurring?: boolean;
+  recurrence_interval?: RecurrenceInterval | null;
   created_at: string;
   updated_at: string;
   branch?: Branch | null;
@@ -842,11 +883,28 @@ export interface RecurringExpense {
   branch?: Branch | null;
 }
 
+export interface ExpenseStatsCategory {
+  category_id: string;
+  name: string;
+  amount: number;
+  count: number;
+}
+
 export interface ExpenseStats {
   totalExpensesToday: number;
   totalExpensesThisMonth: number;
   pendingApprovalCount: number;
   pendingApprovalAmount: number;
   approvedPaidThisMonth: number;
+  /** Alias of totalExpensesThisMonth (used by the stats cards) */
+  thisMonthExpenses: number;
+  /** All-time total of paid/approved expenses */
+  totalExpenses: number;
+  /** Count of paid/approved expense vouchers */
+  expensesCount: number;
+  /** Number of active recurring expense profiles */
+  activeRecurringCount: number;
+  /** Spend grouped by category */
+  byCategory: ExpenseStatsCategory[];
 }
 

@@ -170,11 +170,11 @@ function AppRoutes() {
         } />
 
         <Route path="/branches" element={
-          <PermissionGuard permission="branches.manage"><BranchesPage /></PermissionGuard>
+          <PermissionGuard permission="branches.view"><BranchesPage /></PermissionGuard>
         } />
 
         <Route path="/locations" element={
-          <PermissionGuard permission="branches.manage"><BranchesPage /></PermissionGuard>
+          <PermissionGuard permission="branches.view"><BranchesPage /></PermissionGuard>
         } />
 
         {/* All other nav placeholder pages */}
@@ -210,7 +210,7 @@ export default function App() {
         <ToastProvider>
           <AuthProvider>
             <NotificationProvider>
-              <BrowserRouter>
+              <BrowserRouter basename={import.meta.env.BASE_URL === '/' ? undefined : import.meta.env.BASE_URL}>
                 <AppRoutes />
               </BrowserRouter>
             </NotificationProvider>

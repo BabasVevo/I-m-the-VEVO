@@ -13,12 +13,12 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import type { PurchaseOrder, PurchaseOrderStatus, PaymentStatus, Supplier, Branch } from '@/types/database';
+import type { PurchaseOrder, PurchaseOrderStatus, PurchaseOrderPaymentStatus, Supplier, Branch } from '@/types/database';
 import {
   formatCurrency,
   formatDate,
   PO_STATUS_CONFIG,
-  PAYMENT_STATUS_CONFIG,
+  PO_PAYMENT_STATUS_CONFIG,
 } from '@/lib/format';
 
 interface PurchaseOrderListProps {
@@ -30,14 +30,14 @@ interface PurchaseOrderListProps {
   pageSize: number;
   search: string;
   selectedStatus: PurchaseOrderStatus | 'all';
-  selectedPaymentStatus: PaymentStatus | 'all';
+  selectedPaymentStatus: PurchaseOrderPaymentStatus | 'all';
   selectedSupplier: string;
   selectedBranch: string;
   currency?: string;
   loading: boolean;
   onSearchChange: (search: string) => void;
   onStatusChange: (status: PurchaseOrderStatus | 'all') => void;
-  onPaymentStatusChange: (status: PaymentStatus | 'all') => void;
+  onPaymentStatusChange: (status: PurchaseOrderPaymentStatus | 'all') => void;
   onSupplierChange: (supplierId: string) => void;
   onBranchChange: (branchId: string) => void;
   onPageChange: (page: number) => void;
@@ -141,7 +141,7 @@ export function PurchaseOrderList({
 
           <select
             value={selectedPaymentStatus}
-            onChange={(e) => onPaymentStatusChange(e.target.value as PaymentStatus | 'all')}
+            onChange={(e) => onPaymentStatusChange(e.target.value as PurchaseOrderPaymentStatus | 'all')}
             className="rounded-lg border border-gray-300 bg-white px-2.5 py-2 text-xs text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-900 dark:text-gray-300"
           >
             <option value="all">All Payment Statuses</option>
@@ -208,7 +208,7 @@ export function PurchaseOrderList({
               ) : (
                 purchases.map((po) => {
                   const st = PO_STATUS_CONFIG[po.status] || PO_STATUS_CONFIG.draft;
-                  const paySt = PAYMENT_STATUS_CONFIG[po.payment_status] || PAYMENT_STATUS_CONFIG.pending;
+                  const paySt = PO_PAYMENT_STATUS_CONFIG[po.payment_status] || PO_PAYMENT_STATUS_CONFIG.unpaid;
                   const canReceive = po.status !== 'cancelled' && po.status !== 'received';
                   const canPay = po.due_amount > 0 && po.status !== 'cancelled';
 

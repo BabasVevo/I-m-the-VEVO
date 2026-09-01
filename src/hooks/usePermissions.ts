@@ -92,27 +92,21 @@ export function checkIsAdmin(role?: Role | null, profile?: Profile | null, user?
   return false;
 }
 
-export function usePermissions() {
-  const { permissions, role, profile, user } = useAuth();
+export interface PermissionEvalContext {
+  permissions: string[];
+  role?: Role | null;
+  profile?: Profile | null;
+  user?: User | null;
+}
 
-  const isSuperAdmin = checkIsSuperAdmin(role, profile, user);
-  const isAdmin = checkIsAdmin(role, profile, user);
-  const isSuperOrAdmin = isSuperAdmin || isAdmin;
+/**
+ * Pure permission evaluation (steps 3-5 of the RBAC model).
+ * Super Admin / Admin short-circuits are applied by the caller.
+ */
+export function evaluatePermission(key: string, ctx: PermissionEvalContext): boolean {
+  const { permissions, profile } = ctx;
 
-  const hasPermission = (key: string): boolean => {
-    // 1. Super Administrator has FULL unrestricted master access to everything
-    if (isSuperAdmin) return true;
-
-    // 2. Administrator has access to all standard business and management modules
-    if (isAdmin) {
-      if (key === 'plans.manage' && !isSuperAdmin) {
-        // Optional plan billing restriction if needed, otherwise allow
-        return true;
-      }
-      return true;
-    }
-
-    // 3. Custom permissions override on employee profile
+  // 3. Custom permissions override on employee profile
     if (profile?.custom_permissions && Array.isArray(profile.custom_permissions)) {
       if (profile.custom_permissions.includes(key) || profile.custom_permissions.includes('*')) {
         return true;
@@ -165,10 +159,34 @@ export function usePermissions() {
     if (key === 'activity_log.view' && (hasKey('employees.view') || hasKey('dashboard.view'))) return true;
 
     // Settings & Branches
-    if (key === 'settings.view' && (hasKey('settings.manage') || isSuperOrAdmin)) return true;
+    if (key === 'settings.view' && hasKey('settings.manage')) return true;
     if (key === 'branches.view' && hasKey('dashboard.view')) return true;
 
     return false;
+}
+
+export function usePermissions() {
+  const { permissions, role, profile, user } = useAuth();
+
+  const isSuperAdmin = checkIsSuperAdmin(role, profile, user);
+  const isAdmin = checkIsAdmin(role, profile, user);
+  const isSuperOrAdmin = isSuperAdmin || isAdmin;
+
+  const hasPermission = (key: string): boolean => {
+    // 1. Super Administrator has FULL unrestricted master access to everything
+    if (isSuperAdmin) return true;
+
+    // 2. Administrator has access to all standard business and management modules
+    if (isAdmin) {
+      if (key === 'plans.manage' && !isSuperAdmin) {
+        // Optional plan billing restriction if needed, otherwise allow
+        return true;
+      }
+      return true;
+    }
+
+    // 3-5. Custom permissions, role permissions, aliases
+    return evaluatePermission(key, { permissions, role, profile, user });
   };
 
   const hasAnyPermission = (keys: string[]): boolean => {

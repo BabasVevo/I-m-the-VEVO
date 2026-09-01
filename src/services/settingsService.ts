@@ -214,6 +214,7 @@ export async function fetchSystemSettings(): Promise<FullSystemSettings> {
           financial: mergedFinancial,
           pos: { ...DEFAULT_SYSTEM_SETTINGS.pos, ...(remoteSettings.pos || {}) },
           inventory: { ...DEFAULT_SYSTEM_SETTINGS.inventory, ...(remoteSettings.inventory || {}) },
+          notifications: { ...DEFAULT_SYSTEM_SETTINGS.notifications, ...(remoteSettings.notifications || {}) },
           security: { ...DEFAULT_SYSTEM_SETTINGS.security, ...(remoteSettings.security || {}) },
           preferences: { ...DEFAULT_SYSTEM_SETTINGS.preferences, ...(remoteSettings.preferences || {}) },
         };
@@ -236,6 +237,7 @@ export async function fetchSystemSettings(): Promise<FullSystemSettings> {
         financial: { ...DEFAULT_SYSTEM_SETTINGS.financial, ...(parsed.financial || {}) },
         pos: { ...DEFAULT_SYSTEM_SETTINGS.pos, ...(parsed.pos || {}) },
         inventory: { ...DEFAULT_SYSTEM_SETTINGS.inventory, ...(parsed.inventory || {}) },
+        notifications: { ...DEFAULT_SYSTEM_SETTINGS.notifications, ...(parsed.notifications || {}) },
         security: { ...DEFAULT_SYSTEM_SETTINGS.security, ...(parsed.security || {}) },
         preferences: { ...DEFAULT_SYSTEM_SETTINGS.preferences, ...(parsed.preferences || {}) },
       };
@@ -521,15 +523,15 @@ export async function exportCustomersCsv(): Promise<void> {
   const headers = ['Customer ID', 'Full Name', 'Phone', 'Email', 'Customer Type', 'City', 'Status', 'Total Spent (BIF)', 'Total Orders', 'Credit Balance (BIF)'];
   const rows = customers.map((c) => [
     `"${c.id}"`,
-    `"${c.full_name.replace(/"/g, '""')}"`,
+    `"${(c.first_name && c.last_name ? `${c.first_name} ${c.last_name}` : c.name || '').replace(/"/g, '""')}"`,
     `"${c.phone || ''}"`,
     `"${c.email || ''}"`,
-    `"${c.customer_type}"`,
+    `"${c.customer_type || 'regular'}"`,
     `"${c.city || ''}"`,
-    `"${c.status}"`,
+    `"${c.status || 'active'}"`,
     c.total_spent || 0,
     c.total_orders || 0,
-    c.credit_balance || 0,
+    c.current_balance || 0,
   ]);
   const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
   downloadCsvFile(csv, `babas_customers_${new Date().toISOString().split('T')[0]}.csv`);
@@ -541,14 +543,14 @@ export async function exportSalesCsv(): Promise<void> {
   const rows = sales.map((s) => [
     `"${s.receipt_number || s.id}"`,
     `"${new Date(s.created_at).toLocaleString()}"`,
-    `"${s.cashier_name || 'Staff'}"`,
-    `"${s.customer_name || 'Walk-in'}"`,
+    `"${s.cashier?.full_name || 'Staff'}"`,
+    `"${s.customer?.name || 'Walk-in'}"`,
     `"${s.payment_method}"`,
     s.subtotal,
     s.tax_amount,
     s.discount_amount,
     s.total_amount,
-    `"${s.status}"`,
+    `"${s.payment_status}"`,
   ]);
   const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
   downloadCsvFile(csv, `babas_sales_${new Date().toISOString().split('T')[0]}.csv`);
@@ -579,7 +581,7 @@ export async function exportPurchasesCsv(): Promise<void> {
     `"${new Date(p.order_date || p.created_at).toLocaleDateString()}"`,
     `"${p.supplier?.name || p.supplier_id || 'Supplier'}"`,
     p.items?.length || 0,
-    p.total_amount,
+    p.grand_total,
     p.paid_amount || 0,
     `"${p.payment_status}"`,
     `"${p.status}"`,

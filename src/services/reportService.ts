@@ -1765,7 +1765,7 @@ export function generateReportCsv(
       ]);
     });
   } else if (reportType === 'pnl') {
-    const pnl: ProfitLossReportData = data;
+    const pnl = data as ProfitLossReportData;
     rows.push(['BABAS POS & INVENTORY — PROFIT & LOSS STATEMENT']);
     rows.push([`Period: ${pnl.periodLabel}`, `Currency: ${currency}`]);
     rows.push([]);
@@ -1786,7 +1786,7 @@ export function generateReportCsv(
     rows.push([]);
     rows.push(['NET PROFIT (EBIT)', Math.round(pnl.netOperatingProfit).toString(), pnl.netMarginPercent.toFixed(1) + '%']);
   } else if (reportType === 'inventory') {
-    const inv: InventoryReportData = data;
+    const inv = data as InventoryReportData;
     rows.push(['BABAS POS & INVENTORY — INVENTORY VALUATION REPORT']);
     rows.push([`Generated At: ${new Date().toLocaleString()}`, `Currency: ${currency}`]);
     rows.push([]);
@@ -1818,7 +1818,7 @@ export function generateReportCsv(
       ]);
     });
   } else if (reportType === 'expenses') {
-    const exp: ExpenseReportData = data;
+    const exp = data as ExpenseReportData;
     rows.push(['BABAS POS & INVENTORY — EXPENSE REPORT']);
     rows.push([`Generated At: ${new Date().toLocaleString()}`, `Currency: ${currency}`]);
     rows.push([]);
@@ -1836,7 +1836,7 @@ export function generateReportCsv(
       ]);
     });
   } else if (reportType === 'purchases') {
-    const pur: PurchaseReportData = data;
+    const pur = data as PurchaseReportData;
     rows.push(['BABAS POS & INVENTORY — PURCHASE REPORT']);
     rows.push([`Generated At: ${new Date().toLocaleString()}`, `Currency: ${currency}`]);
     rows.push([]);
@@ -1855,7 +1855,7 @@ export function generateReportCsv(
       ]);
     });
   } else if (reportType === 'customers') {
-    const cust: CustomerReportData = data;
+    const cust = data as CustomerReportData;
     rows.push(['BABAS POS & INVENTORY — CUSTOMER INTELLIGENCE REPORT']);
     rows.push([`Generated At: ${new Date().toLocaleString()}`, `Currency: ${currency}`]);
     rows.push([]);

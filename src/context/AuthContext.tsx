@@ -4,6 +4,7 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import type { Profile, Business, Branch, Role } from '@/types/database';
 import { ALL_NAV_ITEMS } from '@/lib/constants';
 import { ALL_SYSTEM_PERMISSIONS } from '@/services/employeeService';
+import { checkIsSuperAdmin, checkIsAdmin, evaluatePermission } from '@/hooks/usePermissions';
 
 const DEMO_STORAGE_KEY = 'babas_demo_session';
 const DEMO_BIZ_KEY = 'babas_demo_biz';
@@ -146,6 +147,12 @@ interface AuthContextValue {
   permissions: string[];
   loading: boolean;
   isDemoMode: boolean;
+  /** Aliases kept for pages using the legacy naming convention */
+  currentBusiness: Business | null;
+  currentBranch: Branch | null;
+  isSuperAdmin: boolean;
+  isAdmin: boolean;
+  hasPermission: (key: string) => boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   signInDemo: (email?: string, name?: string) => Promise<void>;
@@ -379,7 +386,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               .eq('role_id', activeProfile.role_id);
 
             userPerms = (rp ?? [])
-              .map((r) => (r.permission as { key: string } | null)?.key)
+              .map((r) => {
+                const p = (r as { permission?: unknown }).permission;
+                if (Array.isArray(p)) return (p as Array<{ key?: string }>).map((x) => x.key ?? '');
+                if (p && typeof p === 'object' && 'key' in p) return [(p as { key: string }).key];
+                return [];
+              })
+              .flat()
               .filter((k): k is string => Boolean(k));
           }
           if (userPerms.length === 0 && activeRole.permissions) {
@@ -758,6 +771,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const isSuperAdmin = checkIsSuperAdmin(role, profile, user);
+  const isAdmin = checkIsAdmin(role, profile, user);
+
+  const hasPermission = useCallback(
+    (key: string): boolean => {
+      if (isSuperAdmin) return true;
+      if (isAdmin) return true;
+      return evaluatePermission(key, { permissions, role, profile, user });
+    },
+    [isSuperAdmin, isAdmin, permissions, role, profile, user]
+  );
+
   return (
     <AuthContext.Provider
       value={{
@@ -770,6 +795,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         permissions,
         loading,
         isDemoMode: !isSupabaseConfigured,
+        currentBusiness: business,
+        currentBranch: branch,
+        isSuperAdmin,
+        isAdmin,
+        hasPermission,
         signOut,
         refreshProfile,
         signInDemo,
@@ -797,6 +827,11 @@ export function useAuth(): AuthContextValue {
       permissions: [],
       loading: false,
       isDemoMode: true,
+      currentBusiness: null,
+      currentBranch: null,
+      isSuperAdmin: false,
+      isAdmin: false,
+      hasPermission: () => false,
       signOut: async () => {},
       refreshProfile: async () => {},
       signInDemo: async () => {},

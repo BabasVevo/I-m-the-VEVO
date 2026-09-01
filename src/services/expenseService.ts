@@ -149,12 +149,12 @@ export const INITIAL_DEMO_EXPENSES: Expense[] = [
     category_id: 'expcat-rent',
     expense_number: 'EXP-2026-000401',
     expense_date: new Date(Date.now() - 3 * 86400000).toISOString().slice(0, 10),
-    description: 'Monthly store rental payment for Downtown Flagship premises',
+    description: 'Monthly store rental payment for Bujumbura Flagship (Rohero) premises',
     amount: 2500000,
     tax_amount: 0,
     payment_method: 'bank_transfer',
-    reference_number: 'TRX-NMB-884021',
-    payee: 'Kivukoni Commercial Properties Ltd',
+    reference_number: 'TRX-BCB-884021',
+    payee: 'Rohero Commercial Properties Ltd',
     status: 'paid',
     approved_by: 'demo-user-1',
     approved_at: new Date(Date.now() - 3 * 86400000).toISOString(),
@@ -201,8 +201,8 @@ export const INITIAL_DEMO_EXPENSES: Expense[] = [
     amount: 180000,
     tax_amount: 0,
     payment_method: 'bank_transfer',
-    reference_number: 'CRDB-NET-44901',
-    payee: 'SimbaNET Tanzania',
+    reference_number: 'SOGEB-NET-44901',
+    payee: 'Lumitel Burundi',
     status: 'paid',
     approved_by: 'demo-user-1',
     approved_at: new Date(Date.now() - 4 * 86400000).toISOString(),
@@ -279,7 +279,7 @@ export const INITIAL_DEMO_RECURRING_EXPENSES: RecurringExpense[] = [
     last_generated_date: new Date(Date.now() - 3 * 86400000).toISOString().slice(0, 10),
     next_due_date: new Date(Date.now() + 27 * 86400000).toISOString().slice(0, 10),
     payment_method: 'bank_transfer',
-    payee: 'Kivukoni Commercial Properties Ltd',
+    payee: 'Rohero Commercial Properties Ltd',
     is_active: true,
     auto_generate: false,
     created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
@@ -291,7 +291,7 @@ export const INITIAL_DEMO_RECURRING_EXPENSES: RecurringExpense[] = [
     business_id: 'demo-biz-1',
     branch_id: 'branch-masaki',
     category_id: 'expcat-internet',
-    title: 'SimbaNET Fiber Internet Connection',
+    title: 'Lumitel Fiber Internet Connection',
     amount: 180000,
     frequency: 'monthly',
     start_date: '2026-01-01',
@@ -299,7 +299,7 @@ export const INITIAL_DEMO_RECURRING_EXPENSES: RecurringExpense[] = [
     last_generated_date: new Date(Date.now() - 4 * 86400000).toISOString().slice(0, 10),
     next_due_date: new Date(Date.now() + 26 * 86400000).toISOString().slice(0, 10),
     payment_method: 'bank_transfer',
-    payee: 'SimbaNET Tanzania',
+    payee: 'Lumitel Burundi',
     is_active: true,
     auto_generate: false,
     created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
@@ -986,12 +986,40 @@ export async function fetchExpenseStats(
     .filter((e) => e.expense_date.startsWith(currentMonthPrefix) && (e.status === 'paid' || e.status === 'approved'))
     .reduce((sum, e) => sum + (e.amount || 0), 0);
 
+  const settled = expenses.filter((e) => e.status === 'paid' || e.status === 'approved');
+  const totalExpenses = settled.reduce((sum, e) => sum + (e.amount || 0), 0);
+
+  const byCategory: { category_id: string; name: string; amount: number; count: number }[] = [];
+  for (const e of settled) {
+    const existing = byCategory.find((c) => c.category_id === e.category_id);
+    if (existing) {
+      existing.amount += e.amount || 0;
+      existing.count += 1;
+    } else {
+      byCategory.push({
+        category_id: e.category_id,
+        name: (e.category as { name?: string } | null | undefined)?.name || 'Uncategorized',
+        amount: e.amount || 0,
+        count: 1,
+      });
+    }
+  }
+  byCategory.sort((a, b) => b.amount - a.amount);
+
+  const recurring = await fetchRecurringExpenses(businessId, branchId);
+  const activeRecurringCount = recurring.filter((r) => r.is_active).length;
+
   return {
     totalExpensesToday,
     totalExpensesThisMonth,
     pendingApprovalCount,
     pendingApprovalAmount,
     approvedPaidThisMonth,
+    thisMonthExpenses: totalExpensesThisMonth,
+    totalExpenses,
+    expensesCount: settled.length,
+    activeRecurringCount,
+    byCategory,
   };
 }
 
@@ -1018,7 +1046,7 @@ export function exportExpensesToCSV(expenses: Expense[]) {
     e.tax_amount || 0,
     e.payment_method,
     e.status,
-    `"${(e.payee || e.vendor_name || '').replace(/"/g, '""')}"`,
+    `"${(e.payee || '').replace(/"/g, '""')}"`,
     `"${(e.reference_number || '').replace(/"/g, '""')}"`,
   ]);
 

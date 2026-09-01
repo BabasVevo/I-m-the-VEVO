@@ -50,8 +50,8 @@ export function CustomerCreateEditModal({
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
-  const [city, setCity] = useState('Dar es Salaam');
-  const [country, setCountry] = useState('Tanzania');
+  const [city, setCity] = useState('Bujumbura');
+  const [country, setCountry] = useState('Burundi');
 
   // Demographics & Financial
   const [dateOfBirth, setDateOfBirth] = useState('');
@@ -80,8 +80,8 @@ export function CustomerCreateEditModal({
       setPhone(customerToEdit.phone || '');
       setEmail(customerToEdit.email || '');
       setAddress(customerToEdit.address || '');
-      setCity(customerToEdit.city || 'Dar es Salaam');
-      setCountry(customerToEdit.country || 'Tanzania');
+      setCity(customerToEdit.city || 'Bujumbura');
+      setCountry(customerToEdit.country || 'Burundi');
       setDateOfBirth(customerToEdit.date_of_birth ? customerToEdit.date_of_birth.substring(0, 10) : '');
       setGender((customerToEdit.gender as 'male' | 'female' | 'other') || '');
       setCreditLimit(customerToEdit.credit_limit ? String(customerToEdit.credit_limit) : '0');
@@ -97,8 +97,8 @@ export function CustomerCreateEditModal({
       setPhone('');
       setEmail('');
       setAddress('');
-      setCity('Dar es Salaam');
-      setCountry('Tanzania');
+      setCity('Bujumbura');
+      setCountry('Burundi');
       setDateOfBirth('');
       setGender('');
       setCreditLimit('0');
@@ -164,8 +164,8 @@ export function CustomerCreateEditModal({
           phone: phone.trim() || null,
           email: email.trim() || null,
           address: address.trim() || null,
-          city: city.trim() || 'Dar es Salaam',
-          country: country.trim() || 'Tanzania',
+          city: city.trim() || 'Bujumbura',
+          country: country.trim() || 'Burundi',
           date_of_birth: dateOfBirth || null,
           gender: gender || null,
           customer_type: customerType,
@@ -192,8 +192,8 @@ export function CustomerCreateEditModal({
           phone: phone.trim() || null,
           email: email.trim() || null,
           address: address.trim() || null,
-          city: city.trim() || 'Dar es Salaam',
-          country: country.trim() || 'Tanzania',
+          city: city.trim() || 'Bujumbura',
+          country: country.trim() || 'Burundi',
           date_of_birth: dateOfBirth || null,
           gender: gender || null,
           customer_type: customerType,

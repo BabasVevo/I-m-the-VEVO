@@ -55,15 +55,12 @@ export function SupplierDetailDrawer({
 
   const loadData = async (id: string) => {
     try {
-      setLoading(true);
       const res = await fetchSupplierById(id);
       setSupplier(res.supplier);
       setNotes(res.notes);
       setPurchases(res.purchases);
     } catch (err) {
       console.error('Error loading supplier details:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -144,7 +141,7 @@ export function SupplierDetailDrawer({
                     )}
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    {supplier?.supplier_type ? SUPPLIER_TYPE_LABELS[supplier.supplier_type] : 'Vendor'} · {supplier?.city || 'Tanzania'}
+                    {supplier?.supplier_type ? SUPPLIER_TYPE_LABELS[supplier.supplier_type] : 'Vendor'} · {supplier?.city || 'Burundi'}
                   </p>
                 </div>
               </div>

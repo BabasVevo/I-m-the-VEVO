@@ -104,7 +104,7 @@ export function RecordSupplierPaymentModal({
 
           <div>
             <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
-              Payment Amount (TZS) <span className="text-rose-500">*</span>
+              Payment Amount (BIF) <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
               <input
@@ -136,7 +136,7 @@ export function RecordSupplierPaymentModal({
               onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
             >
-              <option value="bank_transfer">Bank Transfer (NMB / CRDB / NBC)</option>
+              <option value="bank_transfer">Bank Transfer (BCB / SOGEB / CRDB)</option>
               <option value="mobile_money">Mobile Money (M-Pesa / TigoPesa / Airtel)</option>
               <option value="cash">Cash Outflow</option>
               <option value="card">Corporate Card</option>
@@ -152,7 +152,7 @@ export function RecordSupplierPaymentModal({
               type="text"
               value={referenceNumber}
               onChange={(e) => setReferenceNumber(e.target.value)}
-              placeholder="e.g. NMB-TRX-982341 or M-Pesa Ref"
+              placeholder="e.g. BCB-TRX-982341 or Lumitel Money Ref"
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
             />
           </div>

@@ -26,7 +26,7 @@ interface EmployeeTableProps {
   canEdit?: boolean;
 }
 
-export function getRoleBadgeStyle(roleName?: string) {
+export function getRoleBadgeStyle(roleName?: string | null) {
   switch (roleName) {
     case 'super_admin':
       return 'bg-purple-100 text-purple-800 border-purple-200';

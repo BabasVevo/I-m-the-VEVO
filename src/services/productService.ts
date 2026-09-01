@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
-import type { Product, InventoryItem } from '@/types/database';
+import type { Product, InventoryItem, StockMovement } from '@/types/database';
 import { INITIAL_DEMO_CATEGORIES } from './categoryService';
 
 export const DEMO_PRODUCTS_KEY = 'verdant_demo_products_v3';
@@ -14,8 +14,8 @@ export const INITIAL_DEMO_PRODUCTS: Product[] = [
     name: 'Organic Arabica Coffee Beans (1kg)',
     sku: 'COF-ARA-001',
     barcode: '616400018901',
-    brand: 'Kilimanjaro Estate',
-    description: 'Single-origin washed medium roast coffee beans from Mount Kilimanjaro volcanic soil.',
+    brand: 'Kibira Estate',
+    description: 'Single-origin washed medium roast coffee beans from volcanic soil near Kibira.',
     unit: 'kg',
     cost_price: 18000,
     selling_price: 32000,
@@ -32,7 +32,7 @@ export const INITIAL_DEMO_PRODUCTS: Product[] = [
     name: 'African Spiced Chai Tea (500g)',
     sku: 'TEA-CHAI-002',
     barcode: '616400018902',
-    brand: 'Zanzibar Spice Co.',
+    brand: 'Rumonge Spice Co.',
     description: 'Aromatic loose leaf black tea blended with cardamom, cinnamon, clove, and ginger.',
     unit: 'box',
     cost_price: 9500,
@@ -50,7 +50,7 @@ export const INITIAL_DEMO_PRODUCTS: Product[] = [
     name: 'Thermal Receipt Paper Roll 80x80mm (Box of 50)',
     sku: 'POS-PPR-080',
     barcode: '616400018903',
-    brand: 'Verdant POS',
+    brand: 'BABAS POS',
     description: 'Premium BPA-free crisp black print thermal rolls compatible with standard 80mm printers.',
     unit: 'box',
     cost_price: 45000,
@@ -104,7 +104,7 @@ export const INITIAL_DEMO_PRODUCTS: Product[] = [
     name: 'Artisan Sourdough Loaf (800g)',
     sku: 'BAK-SRD-006',
     barcode: '616400018906',
-    brand: 'Verdant Bakery',
+    brand: 'BABAS Bakery',
     description: 'Slow-fermented 36hr sourdough with crispy golden crust and open airy crumb.',
     unit: 'pcs',
     cost_price: 3500,
@@ -122,7 +122,7 @@ export const INITIAL_DEMO_PRODUCTS: Product[] = [
     name: 'Butter Croissant (Pack of 4)',
     sku: 'BAK-CRS-007',
     barcode: '616400018907',
-    brand: 'Verdant Bakery',
+    brand: 'BABAS Bakery',
     description: 'French laminated pastry made with 100% Normandy cultured butter.',
     unit: 'pack',
     cost_price: 6000,
@@ -853,7 +853,7 @@ export function generateSku(productName: string, categoryPrefix?: string): strin
 }
 
 export function generateBarcode(): string {
-  // Generate 12-digit standard EAN/UPC-like barcode starting with country code 616 (Tanzania/East Africa prefix)
+  // Generate 12-digit standard EAN/UPC-like barcode with a regional prefix
   const prefix = '6164000';
   const random = Math.floor(10000 + Math.random() * 90000).toString();
   return `${prefix}${random}`;

@@ -28,6 +28,7 @@ import type {
   ExpenseStatus,
   Supplier,
 } from '@/types/database';
+import type { CreateExpenseInput } from '@/services/expenseService';
 
 export function ExpensesPage() {
   const { business, branch, user } = useAuth();
@@ -41,10 +42,14 @@ export function ExpensesPage() {
   const [categories, setCategories] = useState<ExpenseCategory[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [stats, setStats] = useState<ExpenseStats>({
-    totalExpenses: 0,
-    thisMonthExpenses: 0,
-    expensesCount: 0,
+    totalExpensesToday: 0,
+    totalExpensesThisMonth: 0,
     pendingApprovalCount: 0,
+    pendingApprovalAmount: 0,
+    approvedPaidThisMonth: 0,
+    thisMonthExpenses: 0,
+    totalExpenses: 0,
+    expensesCount: 0,
     activeRecurringCount: 0,
     byCategory: [],
   });
@@ -82,8 +87,8 @@ export function ExpensesPage() {
           categoryId: selectedCategory || null,
           status: selectedStatus,
           branchId: selectedBranch || null,
-          startDate: startDate || null,
-          endDate: endDate || null,
+          startDate: startDate || undefined,
+          endDate: endDate || undefined,
           page: currentPage,
           pageSize: 10,
         }),
@@ -117,10 +122,7 @@ export function ExpensesPage() {
         message: 'Expense voucher updated successfully.',
       });
     } else {
-      await createExpense(businessId, {
-        ...data,
-        recorded_by: user?.id || null,
-      });
+      await createExpense(businessId, { ...data } as Partial<Expense> as CreateExpenseInput, user?.id || null);
       addToast({
         type: 'success',
         title: 'Expense Recorded',
@@ -150,14 +152,14 @@ export function ExpensesPage() {
         addToast({
           type: 'success',
           title: 'Voucher Approved',
-          message: `Expense "${targetApprovalExpense.title}" has been approved.`,
+          message: `Expense "${targetApprovalExpense.description}" has been approved.`,
         });
       } else {
         await rejectExpenseWorkflow(targetApprovalExpense.id, currentUser, notes);
         addToast({
           type: 'success',
           title: 'Voucher Rejected',
-          message: `Expense "${targetApprovalExpense.title}" marked as rejected.`,
+          message: `Expense "${targetApprovalExpense.description}" marked as rejected.`,
         });
       }
       loadData();
@@ -171,7 +173,7 @@ export function ExpensesPage() {
   };
 
   const handleDelete = async (expense: Expense) => {
-    if (window.confirm(`Delete expense "${expense.title}"?`)) {
+    if (window.confirm(`Delete expense "${expense.description}"?`)) {
       try {
         await deleteExpense(expense.id);
         addToast({
@@ -294,27 +296,7 @@ export function ExpensesPage() {
       <ApprovalActionModal
         isOpen={approvalModalOpen}
         actionType={approvalActionType}
-        item={
-          targetApprovalExpense
-            ? {
-                id: targetApprovalExpense.id,
-                entity_type: 'expense',
-                code: targetApprovalExpense.voucher_number || 'EXP-VOUCHER',
-                title: targetApprovalExpense.title,
-                amount: Number(targetApprovalExpense.amount),
-                currency: targetApprovalExpense.currency || currency,
-                status: targetApprovalExpense.status,
-                requester_name: 'Staff Requester',
-                requester_role: 'Operations',
-                branch_name: branch?.name || 'Main Branch',
-                created_at: targetApprovalExpense.date,
-                date: targetApprovalExpense.date,
-                category_or_supplier: targetApprovalExpense.category?.name || 'Expense',
-                description: targetApprovalExpense.notes || '',
-                attachment_count: targetApprovalExpense.receipt_url ? 1 : 0,
-              }
-            : null
-        }
+        item={targetApprovalExpense}
         onClose={() => {
           setApprovalModalOpen(false);
           setTargetApprovalExpense(null);

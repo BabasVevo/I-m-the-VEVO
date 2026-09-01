@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Download, Upload, X, RefreshCw } from 'lucide-react';
 import type { Customer, CustomerType } from '@/types/database';
-import { exportCustomersToCSV, createCustomer } from '@/services/customerService';
+import { buildCustomersCsv, createCustomer } from '@/services/customerService';
 import { useToast } from '@/context/ToastContext';
 
 interface CustomerExportImportModalProps {
@@ -19,7 +19,7 @@ export function CustomerExportImportModal({
   mode,
   businessId,
   customers,
-  currency = 'TZS',
+  currency = 'BIF',
   onImportCompleted,
   onClose,
 }: CustomerExportImportModalProps) {
@@ -35,7 +35,7 @@ export function CustomerExportImportModal({
 
   const handleExportCSV = () => {
     try {
-      const csvData = exportCustomersToCSV(customers, currency);
+      const csvData = buildCustomersCsv(customers, currency);
       const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -111,7 +111,7 @@ export function CustomerExportImportModal({
 
         const phone = phoneIdx !== -1 ? row[phoneIdx] : null;
         const email = emailIdx !== -1 ? row[emailIdx] : null;
-        const city = cityIdx !== -1 ? row[cityIdx] : 'Dar es Salaam';
+        const city = cityIdx !== -1 ? row[cityIdx] : 'Bujumbura';
         const address = addressIdx !== -1 ? row[addressIdx] : null;
         const typeRaw = typeIdx !== -1 ? row[typeIdx]?.toLowerCase() : 'regular';
         const validTypes: CustomerType[] = ['regular', 'vip', 'wholesale', 'business', 'walk_in'];
@@ -265,7 +265,7 @@ export function CustomerExportImportModal({
                   rows={4}
                   value={csvContent}
                   onChange={(e) => setCsvContent(e.target.value)}
-                  placeholder="Name,Phone,Email,City,Type&#10;Amina Salim,+255712334455,amina@example.com,Dar es Salaam,vip&#10;David Kimaro,+255788990011,david@example.com,Arusha,regular"
+                  placeholder="Name,Phone,Email,City,Type&#10;Aline Nkurunziza,+25779123445,aline@example.com,Bujumbura,vip&#10;Eric Ndayizeye,+25779889900,eric@example.com,Gitega,regular"
                   className="mt-1 font-mono text-xs w-full rounded-xl border border-gray-200 bg-white p-3 text-navy-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                 />
               </div>

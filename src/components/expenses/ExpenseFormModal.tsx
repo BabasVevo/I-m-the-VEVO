@@ -55,14 +55,14 @@ export function ExpenseFormModal({
 
   useEffect(() => {
     if (expense) {
-      setTitle(expense.title || '');
+      setTitle(expense.description || '');
       setCategoryId(expense.category_id || '');
       setBranchId(expense.branch_id || '');
       setAmount(expense.amount || '');
       setTaxAmount(expense.tax_amount || 0);
       setExpenseDate(expense.expense_date ? expense.expense_date.slice(0, 10) : new Date().toISOString().slice(0, 10));
       setPaymentMethod(expense.payment_method || 'mobile_money');
-      setVendorName(expense.vendor_name || '');
+      setVendorName(expense.payee || '');
       setSupplierId(expense.supplier_id || '');
       setReferenceNumber(expense.reference_number || '');
       setStatus(expense.status || 'paid');
@@ -114,14 +114,14 @@ export function ExpenseFormModal({
       setLoading(true);
       setError(null);
       await onSubmit({
-        title: title.trim(),
-        category_id: categoryId || null,
-        branch_id: branchId || null,
+        description: title.trim(),
+        category_id: categoryId,
+        branch_id: branchId,
         amount: numAmount,
         tax_amount: Number(taxAmount) || 0,
         expense_date: expenseDate,
         payment_method: paymentMethod,
-        vendor_name: vendorName.trim() || null,
+        payee: vendorName.trim() || null,
         supplier_id: supplierId || null,
         reference_number: referenceNumber.trim() || null,
         status,
@@ -281,7 +281,7 @@ export function ExpenseFormModal({
                 className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
               >
                 <option value="mobile_money">Mobile Money (M-Pesa / TigoPesa)</option>
-                <option value="bank_transfer">Bank Transfer (CRDB / NMB)</option>
+                <option value="bank_transfer">Bank Transfer (BCB / SOGEB)</option>
                 <option value="cash">Petty Cash</option>
                 <option value="card">Company Debit/Credit Card</option>
                 <option value="other">Other</option>

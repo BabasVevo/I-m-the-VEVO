@@ -1,4 +1,4 @@
-import { Search, LayoutGrid, List, X, ArrowUpDown, Tag as TagIcon } from 'lucide-react';
+import { Search, LayoutGrid, List, X, ArrowUpDown, Tag as TagIcon, Upload, Download, Plus } from 'lucide-react';
 import type { Tag, Branch, CustomerSegment } from '@/types/database';
 
 interface CustomerFilterBarProps {
