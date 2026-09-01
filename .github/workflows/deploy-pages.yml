@@ -1,0 +1,60 @@
+# Deploys the BABAS POS app to GitHub Pages.
+# Prerequisite (one-time, in the repo UI): Settings → Pages → Source: "GitHub Actions".
+# Live site URL once enabled: https://BabasVevo.github.io/I-m-the-VEVO/
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main, 'arena/01a05e9c-i-m-the-vevo']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (with Pages base path)
+        run: npm run build -- --base=/I-m-the-VEVO/
+        env:
+          # Publishable (anon) key — safe to expose; the built JS bundle contains it anyway.
+          VITE_SUPABASE_URL: 'https://nszadbvsdbbcrjrahgff.supabase.co'
+          VITE_SUPABASE_ANON_KEY: 'sb_publishable_huUqMAHkkhUMfYEYD37iTw_1N1F9Tr1'
+
+      - name: SPA fallback for deep links
+        run: cp dist/index.html dist/404.html
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

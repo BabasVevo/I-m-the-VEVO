@@ -210,7 +210,7 @@ export default function App() {
         <ToastProvider>
           <AuthProvider>
             <NotificationProvider>
-              <BrowserRouter>
+              <BrowserRouter basename={import.meta.env.BASE_URL === '/' ? undefined : import.meta.env.BASE_URL}>
                 <AppRoutes />
               </BrowserRouter>
             </NotificationProvider>
