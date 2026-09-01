@@ -20,8 +20,8 @@ export function LoginPage() {
 
     if (isDemoMode) {
       setTimeout(async () => {
-        await signInDemo(email || 'admin@verdantpos.com');
-        toast('Welcome to Verdant Demo Mode!', 'success');
+        await signInDemo(email || 'admin@babaspos.bi');
+        toast('Welcome to BABAS Demo Mode!', 'success');
         navigate('/dashboard');
       }, 400);
       return;

@@ -44,7 +44,7 @@ export function ProductFormModal({
   product,
   categories,
   branches,
-  currencySymbol = 'TZS',
+  currencySymbol = 'BIF',
   onQuickAddCategory,
 }: ProductFormModalProps) {
   const [name, setName] = useState('');

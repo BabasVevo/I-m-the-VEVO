@@ -25,11 +25,11 @@ interface ReceiptModalProps {
 export function ReceiptModal({
   isOpen,
   sale,
-  businessName = 'Verdant Retail & Co.',
-  businessAddress = '14 Kivukoni Front, Dar es Salaam',
-  businessPhone = '+255 22 211 4300',
-  businessEmail = 'contact@verdantpos.com',
-  currency = 'TZS',
+  businessName = 'BABAS POS & Inventory',
+  businessAddress = 'Boulevard du 1er Novembre, Rohero, Bujumbura',
+  businessPhone = '+257 22 25 1200',
+  businessEmail = 'contact@babaspos.bi',
+  currency = 'BIF',
   onNewSale,
   onClose,
 }: ReceiptModalProps) {

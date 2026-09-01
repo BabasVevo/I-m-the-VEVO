@@ -28,7 +28,7 @@ interface SaleDetailsModalProps {
 export function SaleDetailsModal({
   isOpen,
   sale,
-  currency = 'TZS',
+  currency = 'BIF',
   onClose,
   onPrint,
   onOpenReturn,

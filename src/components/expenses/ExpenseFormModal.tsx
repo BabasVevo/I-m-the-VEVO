@@ -31,7 +31,7 @@ export function ExpenseFormModal({
   categories,
   branches,
   suppliers,
-  currency = 'TZS',
+  currency = 'BIF',
   onClose,
   onSubmit,
 }: ExpenseFormModalProps) {

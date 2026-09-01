@@ -36,7 +36,7 @@ export function PurchasesPage() {
   const location = useLocation();
 
   const businessId = business?.id || 'demo-biz-1';
-  const currency = business?.currency || 'TZS';
+  const currency = business?.currency || 'BIF';
 
   const [purchases, setPurchases] = useState<PurchaseOrder[]>([]);
   const [totalCount, setTotalCount] = useState(0);

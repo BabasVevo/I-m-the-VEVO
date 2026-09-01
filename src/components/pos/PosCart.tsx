@@ -37,7 +37,7 @@ export function PosCart({
   customer,
   saleDiscount,
   taxRate,
-  currency = 'TZS',
+  currency = 'BIF',
   canOverrideStock = false,
   canApplyDiscount = true,
   onUpdateQuantity,

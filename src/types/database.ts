@@ -1,10 +1,12 @@
 export type RoleName =
   | 'super_admin'
+  | 'admin'
   | 'business_owner'
   | 'branch_manager'
   | 'cashier'
-  | 'marketing_manager'
   | 'inventory_manager'
+  | 'sales_employee'
+  | 'marketing_manager'
   | 'accountant'
   | 'staff';
 
@@ -16,7 +18,16 @@ export interface Business {
   phone: string | null;
   email: string | null;
   currency: string;
+  currency_symbol?: string | null;
+  decimal_places?: number;
   tax_rate: number;
+  tax_name?: string | null;
+  tax_enabled?: boolean;
+  country?: string | null;
+  city?: string | null;
+  description?: string | null;
+  tax_id?: string | null;
+  registration_number?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -30,16 +41,23 @@ export interface Branch {
   email: string | null;
   manager_id: string | null;
   is_active: boolean;
+  city?: string | null;
   created_at: string;
   updated_at: string;
+  manager?: Profile | null;
+  employee_count?: number;
 }
 
 export interface Role {
   id: string;
   business_id: string | null;
-  name: string;
+  name: RoleName;
+  display_name?: string;
   description: string | null;
   is_system: boolean;
+  permissions_count?: number;
+  employee_count?: number;
+  permissions?: string[];
   created_at: string;
   updated_at: string;
 }
@@ -47,23 +65,127 @@ export interface Role {
 export interface Permission {
   id: string;
   key: string;
+  name?: string;
   description: string | null;
-  module: string;
+  module:
+    | 'dashboard'
+    | 'pos'
+    | 'sales'
+    | 'products'
+    | 'inventory'
+    | 'customers'
+    | 'suppliers'
+    | 'purchases'
+    | 'expenses'
+    | 'reports'
+    | 'employees'
+    | 'settings'
+    | 'branches'
+    | 'marketing';
+  action?: 'view' | 'create' | 'edit' | 'delete' | 'approve' | 'export' | 'manage';
   created_at: string;
+}
+
+export interface RolePermission {
+  id: string;
+  role_id: string;
+  permission_id: string;
+  created_at?: string;
 }
 
 export interface Profile {
   id: string;
   business_id: string;
   branch_id: string | null;
+  employee_id?: string | null;
   full_name: string;
+  email?: string | null;
   phone: string | null;
+  avatar_url?: string | null;
+  job_title?: string | null;
   role_id: string | null;
+  status?: 'active' | 'inactive';
   is_active: boolean;
+  date_joined?: string | null;
+  custom_permissions?: string[] | null;
+  notes?: string | null;
+  emergency_contact_name?: string | null;
+  emergency_contact_phone?: string | null;
+  emergency_contact_relation?: string | null;
+  last_login_at?: string | null;
   created_at: string;
   updated_at: string;
   role?: Role | null;
   branch?: Branch | null;
+}
+
+export type Employee = Profile;
+
+export type ActivityActionType =
+  | 'auth_login'
+  | 'auth_logout'
+  | 'sale_created'
+  | 'sale_refunded'
+  | 'sale_cancelled'
+  | 'product_created'
+  | 'product_updated'
+  | 'product_deleted'
+  | 'inventory_adjusted'
+  | 'inventory_transferred'
+  | 'expense_created'
+  | 'expense_approved'
+  | 'expense_deleted'
+  | 'po_created'
+  | 'po_received'
+  | 'po_payment_recorded'
+  | 'customer_created'
+  | 'customer_updated'
+  | 'supplier_created'
+  | 'supplier_payment'
+  | 'employee_created'
+  | 'employee_updated'
+  | 'employee_status_changed'
+  | 'permissions_updated'
+  | 'settings_updated';
+
+export type ActivityActionCategory =
+  | 'auth'
+  | 'sales'
+  | 'inventory'
+  | 'purchases'
+  | 'expenses'
+  | 'customers'
+  | 'suppliers'
+  | 'employees'
+  | 'settings';
+
+export interface ActivityLog {
+  id: string;
+  business_id: string;
+  branch_id: string | null;
+  employee_id: string;
+  employee_name: string;
+  employee_role: string;
+  employee_avatar?: string | null;
+  action_type: ActivityActionType;
+  action_category: ActivityActionCategory;
+  description: string;
+  details?: Record<string, unknown> | null;
+  entity_type?: string | null;
+  entity_id?: string | null;
+  entity_label?: string | null;
+  branch_name?: string | null;
+  ip_address?: string | null;
+  created_at: string;
+}
+
+export interface EmployeeStats {
+  totalEmployees: number;
+  activeEmployees: number;
+  inactiveEmployees: number;
+  newThisMonth: number;
+  roleCounts: Record<string, number>;
+  branchCounts: Record<string, number>;
 }
 
 export interface BusinessSetting {

@@ -1,27 +1,31 @@
 import { format, parseISO } from 'date-fns';
 import type { PaymentMethod, PaymentStatus } from '@/types/database';
 
-export function formatCurrency(amount: number, currency: string = 'TZS'): string {
+export function formatCurrency(amount: number, currency: string = 'BIF'): string {
   const safeAmount = isNaN(amount) ? 0 : amount;
+  const curr = (currency || 'BIF').toUpperCase();
   
-  // Custom clean formatting for common currencies like TZS, USD, EUR, etc.
-  if (currency.toUpperCase() === 'TZS') {
+  // Clean formatting for BIF and TZS
+  if (curr === 'BIF' || curr === 'TZS' || curr === 'RWF' || curr === 'UGX') {
     const formatted = new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(safeAmount);
-    return `TZS ${formatted}`;
+      maximumFractionDigits: 0,
+    }).format(Math.round(safeAmount));
+    return `${curr} ${formatted}`;
   }
 
   try {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency || 'USD',
+      currency: curr,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(safeAmount);
   } catch {
-    return `${currency || 'TZS'} ${new Intl.NumberFormat('en-US').format(safeAmount)}`;
+    return `${curr} ${new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(safeAmount)}`;
   }
 }
 
@@ -52,7 +56,7 @@ export function formatDate(isoString: string | null | undefined): string {
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   cash: 'Cash',
   card: 'Card',
-  mobile_money: 'Mobile Money (M-Pesa)',
+  mobile_money: 'Mobile Money (Lumicash / EcoCash)',
   bank_transfer: 'Bank Transfer',
   credit: 'Store Credit',
   split: 'Split Payment',

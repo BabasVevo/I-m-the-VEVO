@@ -17,7 +17,7 @@ interface SalesTargetCardProps {
 export function SalesTargetCard({
   target,
   currentSales,
-  currency = 'TZS',
+  currency = 'BIF',
   scopeName,
   canEditTarget,
   onUpdateTarget,

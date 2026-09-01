@@ -448,7 +448,7 @@ export function CustomerCreateEditModal({
                         type="text"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+255 712 345 678"
+                        placeholder="+257 71 23 45 67"
                         className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pr-3 pl-9 text-xs font-medium text-navy-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                       />
                     </div>
@@ -479,7 +479,7 @@ export function CustomerCreateEditModal({
                     type="text"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder="e.g. 14 Kivukoni Front, Suite 400"
+                    placeholder="e.g. Boulevard du 1er Novembre, Rohero"
                     className="mt-1 w-full rounded-xl border border-gray-200 bg-white p-2.5 text-xs font-medium text-navy-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                   />
                 </div>
@@ -493,7 +493,7 @@ export function CustomerCreateEditModal({
                       type="text"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      placeholder="Dar es Salaam"
+                      placeholder="Bujumbura"
                       className="mt-1 w-full rounded-xl border border-gray-200 bg-white p-2.5 text-xs font-medium text-navy-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                     />
                   </div>
@@ -506,7 +506,7 @@ export function CustomerCreateEditModal({
                       type="text"
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
-                      placeholder="Tanzania"
+                      placeholder="Burundi"
                       className="mt-1 w-full rounded-xl border border-gray-200 bg-white p-2.5 text-xs font-medium text-navy-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                     />
                   </div>

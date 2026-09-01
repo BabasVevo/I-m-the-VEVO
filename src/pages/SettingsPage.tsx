@@ -1,270 +1,287 @@
-import { useState, useEffect, type FormEvent } from 'react';
-import { Loader2, Building2, Save } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import {
+  Building2,
+  Coins,
+  Monitor,
+  Boxes,
+  Shield,
+  Globe2,
+  Database,
+  MapPin,
+  Loader2,
+  ShieldAlert,
+  Bell,
+} from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { useTheme } from '@/context/ThemeContext';
-import { supabase } from '@/lib/supabase';
-import type { Business } from '@/types/database';
+import type { SettingsTabId, FullSystemSettings } from '@/types/settings';
+import type { Branch } from '@/types/database';
+import {
+  fetchSystemSettings,
+  saveSystemSectionSettings,
+  DEFAULT_SYSTEM_SETTINGS,
+} from '@/services/settingsService';
+import { fetchAllBranches } from '@/services/branchService';
+
+import { CompanyProfileTab } from '@/components/settings/CompanyProfileTab';
+import { BranchSettingsTab } from '@/components/settings/BranchSettingsTab';
+import { FinancialSettingsTab } from '@/components/settings/FinancialSettingsTab';
+import { PosSettingsTab } from '@/components/settings/PosSettingsTab';
+import { InventorySettingsTab } from '@/components/settings/InventorySettingsTab';
+import { SecuritySettingsTab } from '@/components/settings/SecuritySettingsTab';
+import { SystemPreferencesTab } from '@/components/settings/SystemPreferencesTab';
+import { DataManagementTab } from '@/components/settings/DataManagementTab';
+import { NotificationSettingsTab } from '@/components/settings/NotificationSettingsTab';
 
 export function SettingsPage() {
-  const {
-    business,
-    user,
-    profile,
-    refreshProfile,
-    isDemoMode,
-    updateDemoBusiness,
-    updateDemoProfile,
-  } = useAuth();
-  const { toast } = useToast();
-  const [tab, setTab] = useState<'business' | 'profile' | 'appearance' | 'security'>('business');
-  const [saving, setSaving] = useState(false);
+  const { user, profile, role, hasPermission, branch } = useAuth();
+  const { addToast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [bizForm, setBizForm] = useState<Business | null>(business);
-  const [profileForm, setProfileForm] = useState({ full_name: profile?.full_name ?? '', phone: profile?.phone ?? '' });
-  const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' });
+  const [activeTab, setActiveTab] = useState<SettingsTabId>('company');
+  const [settings, setSettings] = useState<FullSystemSettings>(DEFAULT_SYSTEM_SETTINGS);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  const isSuperAdmin = role?.name === 'super_admin' || role?.name === 'business_owner';
+  const canManageSettings = isSuperAdmin || hasPermission('settings.manage');
+  const canManageBranches = isSuperAdmin || hasPermission('branches.manage') || hasPermission('settings.manage');
+
+  // Load Settings and Branches on mount
   useEffect(() => {
-    setBizForm(business);
-    setProfileForm({ full_name: profile?.full_name ?? '', phone: profile?.phone ?? '' });
-  }, [business, profile]);
-
-  const saveBusiness = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!bizForm || !business) return;
-    setSaving(true);
-
-    if (isDemoMode) {
-      updateDemoBusiness(bizForm);
-      setSaving(false);
-      toast('Business settings saved (Demo Mode).', 'success');
-      return;
+    async function init() {
+      try {
+        setLoading(true);
+        const [loadedSettings, loadedBranches] = await Promise.all([
+          fetchSystemSettings(),
+          fetchAllBranches(),
+        ]);
+        setSettings(loadedSettings);
+        setBranches(loadedBranches);
+      } catch (err: unknown) {
+        console.error('Failed to load system settings:', err);
+        addToast('Failed to load system configuration.', 'error');
+      } finally {
+        setLoading(false);
+      }
     }
+    init();
+  }, []);
 
-    const { error } = await supabase
-      .from('businesses')
-      .update({
-        name: bizForm.name,
-        address: bizForm.address,
-        phone: bizForm.phone,
-        email: bizForm.email,
-        currency: bizForm.currency,
-        tax_rate: bizForm.tax_rate,
-      })
-      .eq('id', business.id);
-    setSaving(false);
-    if (error) toast(error.message, 'error');
-    else {
-      toast('Business settings saved.', 'success');
-      refreshProfile();
+  // Sync tab with URL search parameter if present
+  useEffect(() => {
+    const tabParam = searchParams.get('tab') as SettingsTabId | null;
+    if (
+      tabParam &&
+      [
+        'company',
+        'branches',
+        'financial',
+        'pos',
+        'inventory',
+        'notifications',
+        'security',
+        'preferences',
+        'data',
+      ].includes(tabParam)
+    ) {
+      setActiveTab(tabParam);
     }
+  }, [searchParams]);
+
+  const handleTabChange = (newTab: SettingsTabId) => {
+    setActiveTab(newTab);
+    setSearchParams({ tab: newTab });
   };
 
-  const saveProfile = async (e: FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
+  const handleSaveSection = async <K extends keyof FullSystemSettings>(
+    sectionKey: K,
+    updatedData: FullSystemSettings[K]
+  ) => {
+    const actor = {
+      id: profile?.id || user?.id || 'admin',
+      name: profile?.full_name || 'Administrator',
+      role: role?.display_name || role?.name || 'Super Administrator',
+      branchId: branch?.id,
+    };
 
-    if (isDemoMode) {
-      updateDemoProfile(profileForm);
-      setSaving(false);
-      toast('Profile updated (Demo Mode).', 'success');
-      return;
-    }
-
-    const { error } = await supabase
-      .from('profiles')
-      .update({ full_name: profileForm.full_name, phone: profileForm.phone })
-      .eq('id', user?.id);
-    setSaving(false);
-    if (error) toast(error.message, 'error');
-    else {
-      toast('Profile updated.', 'success');
-      refreshProfile();
-    }
+    const newFullSettings = await saveSystemSectionSettings(sectionKey, updatedData, actor);
+    setSettings(newFullSettings);
   };
 
-  const updatePassword = async (e: FormEvent) => {
-    e.preventDefault();
-    if (passwordForm.next !== passwordForm.confirm) {
-      toast('New passwords do not match.', 'error');
-      return;
-    }
-    if (passwordForm.next.length < 6) {
-      toast('Password must be at least 6 characters.', 'error');
-      return;
-    }
-    setSaving(true);
-
-    if (isDemoMode) {
-      setSaving(false);
-      toast('Password updated (Demo Mode).', 'success');
-      setPasswordForm({ current: '', next: '', confirm: '' });
-      return;
-    }
-
-    const { error } = await supabase.auth.updateUser({ password: passwordForm.next });
-    setSaving(false);
-    if (error) toast(error.message, 'error');
-    else {
-      toast('Password updated.', 'success');
-      setPasswordForm({ current: '', next: '', confirm: '' });
-    }
-  };
-
-  const tabs = [
-    { id: 'business' as const, label: 'Business' },
-    { id: 'profile' as const, label: 'Profile' },
-    { id: 'appearance' as const, label: 'Appearance' },
-    { id: 'security' as const, label: 'Security' },
+  const tabDefinitions: { id: SettingsTabId; label: string; icon: typeof Building2; adminOnly?: boolean }[] = [
+    { id: 'company', label: 'Company Profile', icon: Building2 },
+    { id: 'branches', label: 'Branch & Locations', icon: MapPin },
+    { id: 'financial', label: 'Currency & Financial', icon: Coins },
+    { id: 'pos', label: 'POS & Receipts', icon: Monitor },
+    { id: 'inventory', label: 'Inventory & Stock', icon: Boxes },
+    { id: 'notifications', label: 'Notifications & Alerts', icon: Bell },
+    { id: 'security', label: 'Security & Access', icon: Shield },
+    { id: 'preferences', label: 'System Preferences', icon: Globe2 },
+    { id: 'data', label: 'Data & Backup', icon: Database, adminOnly: true },
   ];
 
-  return (
-    <div className="max-w-3xl">
-      <h1 className="text-2xl font-bold text-navy-900 dark:text-white">Settings</h1>
-      <p className="mt-1 text-sm text-gray-500 dark:text-navy-400">Manage your business, profile, and preferences.</p>
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-16 space-y-3 bg-white dark:bg-navy-900 rounded-xl border border-gray-200 dark:border-navy-800">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
+        <p className="text-sm font-medium text-navy-800 dark:text-navy-200">
+          Loading BABAS system configuration...
+        </p>
+      </div>
+    );
+  }
 
-      {/* Tabs */}
-      <div className="mt-6 flex gap-1 overflow-x-auto border-b border-gray-200 dark:border-navy-800">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={`whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
-              tab === t.id
-                ? 'border-brand-600 text-brand-600'
-                : 'border-transparent text-gray-500 hover:text-navy-900 dark:text-navy-400 dark:hover:text-white'
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
+  // Access check: User must have settings.view or settings.manage or be super admin
+  const hasAnyAccess = canManageSettings || isSuperAdmin || hasPermission('settings.view');
+  if (!hasAnyAccess) {
+    return (
+      <div className="p-12 text-center bg-white dark:bg-navy-900 rounded-xl border border-gray-200 dark:border-navy-800 shadow-sm max-w-lg mx-auto mt-8">
+        <ShieldAlert className="h-12 w-12 text-amber-500 mx-auto mb-3" />
+        <h2 className="text-lg font-bold text-navy-900 dark:text-white">
+          Settings Access Restricted
+        </h2>
+        <p className="text-xs text-gray-500 dark:text-navy-400 mt-1 leading-relaxed">
+          Your current account role does not have administrative privileges to modify system configuration. Please contact your Super Administrator.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-navy-900 dark:text-white flex items-center gap-2.5">
+            <span>System Settings & Configuration</span>
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-navy-300 mt-0.5">
+            Configure {settings.company.name || 'BABAS'} legal identity, multi-location branches, financial parameters, thermal receipts, and inventory valuation.
+          </p>
+        </div>
+
+        {branch && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-50 dark:bg-brand-950/60 border border-brand-200 dark:border-brand-900/50 self-start sm:self-auto">
+            <MapPin className="h-4 w-4 text-brand-600 dark:text-brand-400" />
+            <div className="text-xs">
+              <span className="text-gray-500 dark:text-navy-400">Current Station: </span>
+              <strong className="text-navy-900 dark:text-navy-100">{branch.name}</strong>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Business tab */}
-      {tab === 'business' && bizForm && (
-        <form onSubmit={saveBusiness} className="mt-6 space-y-4 card p-6">
-          <div className="flex items-center gap-2 text-navy-900 dark:text-white">
-            <Building2 className="h-5 w-5 text-brand-600" />
-            <h2 className="text-lg font-semibold">Business Information</h2>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="label">Business name</label>
-              <input className="input" value={bizForm.name} onChange={(e) => setBizForm({ ...bizForm, name: e.target.value })} />
-            </div>
-            <div>
-              <label className="label">Currency</label>
-              <select className="input" value={bizForm.currency} onChange={(e) => setBizForm({ ...bizForm, currency: e.target.value })}>
-                <option value="USD">USD ($)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="GBP">GBP (£)</option>
-                <option value="KES">KES (KSh)</option>
-                <option value="NGN">NGN (₦)</option>
-                <option value="GHS">GHS (₵)</option>
-                <option value="ZAR">ZAR (R)</option>
-              </select>
-            </div>
-            <div>
-              <label className="label">Phone</label>
-              <input className="input" value={bizForm.phone ?? ''} onChange={(e) => setBizForm({ ...bizForm, phone: e.target.value })} />
-            </div>
-            <div>
-              <label className="label">Email</label>
-              <input className="input" value={bizForm.email ?? ''} onChange={(e) => setBizForm({ ...bizForm, email: e.target.value })} />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="label">Address</label>
-              <input className="input" value={bizForm.address ?? ''} onChange={(e) => setBizForm({ ...bizForm, address: e.target.value })} />
-            </div>
-            <div>
-              <label className="label">Default tax rate (%)</label>
-              <input type="number" step="0.01" className="input" value={bizForm.tax_rate} onChange={(e) => setBizForm({ ...bizForm, tax_rate: parseFloat(e.target.value) || 0 })} />
-            </div>
-          </div>
-          <button type="submit" disabled={saving} className="btn-primary">
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            Save changes
-          </button>
-        </form>
-      )}
+      {/* Main Settings Card with Horizontal/Vertical Responsive Tabs */}
+      <div className="bg-white dark:bg-navy-900 rounded-xl border border-gray-200 dark:border-navy-800 shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[600px]">
+        {/* Navigation Sidebar Tabs */}
+        <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-gray-200 dark:border-navy-800 bg-gray-50/70 dark:bg-navy-950/50 p-3 shrink-0">
+          <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible pb-2 md:pb-0 scrollbar-none">
+            {tabDefinitions.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              if (item.adminOnly && !isSuperAdmin) return null;
 
-      {/* Profile tab */}
-      {tab === 'profile' && (
-        <form onSubmit={saveProfile} className="mt-6 space-y-4 card p-6">
-          <h2 className="text-lg font-semibold text-navy-900 dark:text-white">Your Profile</h2>
-          <div>
-            <label className="label">Email (read-only)</label>
-            <input className="input bg-gray-50 dark:bg-navy-950" value={user?.email ?? ''} disabled />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="label">Full name</label>
-              <input className="input" value={profileForm.full_name} onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })} />
-            </div>
-            <div>
-              <label className="label">Phone</label>
-              <input className="input" value={profileForm.phone} onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })} />
-            </div>
-          </div>
-          <button type="submit" disabled={saving} className="btn-primary">
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            Save profile
-          </button>
-        </form>
-      )}
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleTabChange(item.id)}
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-semibold whitespace-nowrap transition text-left w-full ${
+                    isActive
+                      ? 'bg-brand-600 text-white shadow-sm font-bold'
+                      : 'text-gray-600 dark:text-navy-300 hover:bg-gray-200/70 dark:hover:bg-navy-800/80 hover:text-navy-900 dark:hover:text-white'
+                  }`}
+                >
+                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-white' : 'text-gray-400 dark:text-navy-400'}`} />
+                  <span className="truncate">{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </aside>
 
-      {/* Appearance tab */}
-      {tab === 'appearance' && <AppearanceTab />}
+        {/* Tab Content Area */}
+        <main className="flex-1 p-6 sm:p-8 overflow-y-auto">
+          {activeTab === 'company' && (
+            <CompanyProfileTab
+              initialConfig={settings.company}
+              onSave={(updated) => handleSaveSection('company', updated)}
+              canEdit={canManageSettings}
+            />
+          )}
 
-      {/* Security tab */}
-      {tab === 'security' && (
-        <form onSubmit={updatePassword} className="mt-6 space-y-4 card p-6">
-          <h2 className="text-lg font-semibold text-navy-900 dark:text-white">Change Password</h2>
-          <div>
-            <label className="label">New password</label>
-            <input type="password" className="input" value={passwordForm.next} onChange={(e) => setPasswordForm({ ...passwordForm, next: e.target.value })} />
-          </div>
-          <div>
-            <label className="label">Confirm new password</label>
-            <input type="password" className="input" value={passwordForm.confirm} onChange={(e) => setPasswordForm({ ...passwordForm, confirm: e.target.value })} />
-          </div>
-          <button type="submit" disabled={saving} className="btn-primary">
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            Update password
-          </button>
-        </form>
-      )}
+          {activeTab === 'branches' && (
+            <BranchSettingsTab
+              isSuperAdmin={isSuperAdmin}
+              canManageBranches={canManageBranches}
+              userBranchId={branch?.id || null}
+            />
+          )}
+
+          {activeTab === 'financial' && (
+            <FinancialSettingsTab
+              initialConfig={settings.financial}
+              onSave={(updated) => handleSaveSection('financial', updated)}
+              canEdit={canManageSettings}
+            />
+          )}
+
+          {activeTab === 'pos' && (
+            <PosSettingsTab
+              initialConfig={settings.pos}
+              companyConfig={settings.company}
+              financialConfig={settings.financial}
+              branches={branches}
+              onSave={(updated) => handleSaveSection('pos', updated)}
+              canEdit={canManageSettings}
+            />
+          )}
+
+          {activeTab === 'inventory' && (
+            <InventorySettingsTab
+              initialConfig={settings.inventory}
+              onSave={(updated) => handleSaveSection('inventory', updated)}
+              canEdit={canManageSettings}
+            />
+          )}
+
+          {activeTab === 'notifications' && (
+            <NotificationSettingsTab
+              initialConfig={settings.notifications}
+              onSave={(updated) => handleSaveSection('notifications', updated)}
+            />
+          )}
+
+          {activeTab === 'security' && (
+            <SecuritySettingsTab
+              initialConfig={settings.security}
+              currentUser={profile}
+              currentRole={role}
+              onSave={(updated) => handleSaveSection('security', updated)}
+              canEdit={canManageSettings}
+            />
+          )}
+
+          {activeTab === 'preferences' && (
+            <SystemPreferencesTab
+              initialConfig={settings.preferences}
+              onSave={(updated) => handleSaveSection('preferences', updated)}
+              canEdit={canManageSettings}
+            />
+          )}
+
+          {activeTab === 'data' && (
+            <DataManagementTab
+              isSuperAdmin={isSuperAdmin}
+              canEdit={isSuperAdmin}
+            />
+          )}
+        </main>
+      </div>
     </div>
   );
 }
 
-function AppearanceTab() {
-  const { theme, setTheme } = useTheme();
-  return (
-    <div className="mt-6 card p-6">
-      <h2 className="text-lg font-semibold text-navy-900 dark:text-white">Appearance</h2>
-      <p className="mt-1 text-sm text-gray-500 dark:text-navy-400">Choose how Verdant looks for you.</p>
-      <div className="mt-4 grid grid-cols-2 gap-4">
-        {(['light', 'dark'] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTheme(t)}
-            className={`rounded-lg border-2 p-4 text-left transition-colors ${
-              theme === t
-                ? 'border-brand-600 bg-brand-50 dark:bg-brand-950'
-                : 'border-gray-200 hover:border-gray-300 dark:border-navy-700 dark:hover:border-navy-600'
-            }`}
-          >
-            <div className={`mb-2 h-20 rounded-md ${t === 'light' ? 'bg-gray-100' : 'bg-navy-900'}`}>
-              <div className="flex h-full items-center justify-center gap-2">
-                <div className={`h-3 w-3 rounded-full ${t === 'light' ? 'bg-brand-500' : 'bg-brand-400'}`} />
-                <div className={`h-2 w-12 rounded ${t === 'light' ? 'bg-gray-300' : 'bg-navy-700'}`} />
-              </div>
-            </div>
-            <p className="text-sm font-medium capitalize text-navy-900 dark:text-white">{t} mode</p>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
+export default SettingsPage;

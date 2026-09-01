@@ -7,7 +7,7 @@ interface PurchaseStatsCardsProps {
   currency?: string;
 }
 
-export function PurchaseStatsCards({ stats, currency = 'TZS' }: PurchaseStatsCardsProps) {
+export function PurchaseStatsCards({ stats, currency = 'BIF' }: PurchaseStatsCardsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <div id="stat-total-po" className="rounded-xl border border-gray-200 bg-white p-5 shadow-xs transition-all dark:border-navy-800 dark:bg-navy-900">

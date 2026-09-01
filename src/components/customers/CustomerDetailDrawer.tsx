@@ -54,7 +54,7 @@ export function CustomerDetailDrawer({
   customer,
   isOpen,
   businessId,
-  currency = 'TZS',
+  currency = 'BIF',
   receiptSettings,
   segments = [],
   onClose,

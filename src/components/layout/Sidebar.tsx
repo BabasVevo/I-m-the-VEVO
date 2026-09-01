@@ -41,7 +41,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
               <Leaf className="h-4 w-4" />
             </div>
-            {!collapsed && <span className="text-lg font-bold text-navy-900 dark:text-white">Verdant</span>}
+            {!collapsed && <span className="text-lg font-bold text-navy-900 dark:text-white">BABAS</span>}
           </Link>
           <button
             onClick={() => setMobileOpen(false)}

@@ -27,11 +27,11 @@ import { CustomerDetailDrawer } from '@/components/customers/CustomerDetailDrawe
 
 export function CustomerSegmentsPage() {
   const navigate = useNavigate();
-  const { currentBusiness } = useAuth();
+  const { business } = useAuth();
   const { addToast } = useToast();
 
-  const businessId = currentBusiness?.id || 'demo-business';
-  const currency = currentBusiness?.currency || 'TZS';
+  const businessId = business?.id || 'demo-biz-1';
+  const currency = business?.currency || 'BIF';
 
   const [segments, setSegments] = useState<CustomerSegment[]>([]);
   const [allCustomers, setAllCustomers] = useState<Customer[]>([]);

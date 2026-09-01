@@ -36,12 +36,12 @@ import { ProductDetailModal } from '@/components/products/ProductDetailModal';
 import { BarcodePreviewModal } from '@/components/products/BarcodePreviewModal';
 
 export function StockPage() {
-  const { profile } = useAuth();
+  const { profile, business } = useAuth();
   const { hasPermission } = usePermissions();
   const { addToast } = useToast();
 
-  const businessId = profile?.business_id || 'demo-biz-1';
-  const currencySymbol = 'TZS';
+  const businessId = profile?.business_id || business?.id || 'demo-biz-1';
+  const currencySymbol = business?.currency || 'BIF';
 
   const canAdjustStock = hasPermission('stock.adjust');
 
@@ -204,7 +204,7 @@ export function StockPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Verdant_Inventory_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `BABAS_Inventory_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

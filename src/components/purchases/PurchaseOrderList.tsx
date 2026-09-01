@@ -62,7 +62,7 @@ export function PurchaseOrderList({
   selectedPaymentStatus,
   selectedSupplier,
   selectedBranch,
-  currency = 'TZS',
+  currency = 'BIF',
   loading,
   onSearchChange,
   onStatusChange,
@@ -235,7 +235,7 @@ export function PurchaseOrderList({
                           {po.supplier?.name || 'Unknown Supplier'}
                         </div>
                         <div className="text-2xs text-gray-500 dark:text-gray-400">
-                          {po.supplier?.city || 'Tanzania'}
+                          {po.supplier?.city || 'Burundi'}
                         </div>
                       </td>
 

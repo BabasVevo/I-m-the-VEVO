@@ -30,7 +30,7 @@ interface SupplierDetailDrawerProps {
 export function SupplierDetailDrawer({
   isOpen,
   supplierId,
-  currency = 'TZS',
+  currency = 'BIF',
   onClose,
   onEdit,
   onRecordPayment,

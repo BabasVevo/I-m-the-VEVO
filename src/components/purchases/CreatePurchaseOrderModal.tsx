@@ -58,7 +58,7 @@ interface OrderItemRow {
 export function CreatePurchaseOrderModal({
   isOpen,
   preselectedSupplierId,
-  currency = 'TZS',
+  currency = 'BIF',
   onClose,
   onSubmit,
 }: CreatePurchaseOrderModalProps) {
@@ -297,7 +297,7 @@ export function CreatePurchaseOrderModal({
                 <option value="">Select a supplier...</option>
                 {suppliers.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.name} ({s.city || 'Tanzania'})
+                    {s.name} ({s.city || 'Burundi'})
                   </option>
                 ))}
               </select>
@@ -393,7 +393,7 @@ export function CreatePurchaseOrderModal({
                     <th className="px-3 py-2.5 min-w-[200px]">Product / Item Name</th>
                     <th className="px-3 py-2.5 w-20">Unit</th>
                     <th className="px-3 py-2.5 w-24">Qty Ordered</th>
-                    <th className="px-3 py-2.5 w-32">Unit Cost (TZS)</th>
+                    <th className="px-3 py-2.5 w-32">Unit Cost ({currency})</th>
                     <th className="px-3 py-2.5 w-24">Tax (%)</th>
                     <th className="px-3 py-2.5 text-right w-32">Line Total</th>
                     <th className="px-2 py-2.5 w-10 text-center"></th>

@@ -46,7 +46,7 @@ export function PosPage() {
   const { addToast } = useToast();
 
   const businessId = business?.id || 'demo-biz-1';
-  const currency = business?.currency || 'TZS';
+  const currency = business?.currency || 'BIF';
   const taxRate = business?.tax_rate ?? 18.0;
 
   // Branch Selection

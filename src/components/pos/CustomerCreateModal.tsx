@@ -164,14 +164,14 @@ export function CustomerCreateModal({
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="e.g. Oysterbay, Plot 42, Dar es Salaam"
+              placeholder="e.g. Boulevard de l'Uprona, Rohero, Bujumbura"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-xs font-medium text-navy-900 outline-hidden transition focus:border-brand-500 focus:bg-white dark:border-navy-700 dark:bg-navy-950 dark:text-white"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">
-              Allowed Credit Limit (TZS / Currency)
+              Allowed Credit Limit (BIF / Currency)
             </label>
             <input
               type="number"

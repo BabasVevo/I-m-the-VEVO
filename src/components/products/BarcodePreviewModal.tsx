@@ -12,7 +12,7 @@ export function BarcodePreviewModal({
   isOpen,
   onClose,
   product,
-  currencySymbol = 'TZS',
+  currencySymbol = 'BIF',
 }: BarcodePreviewModalProps) {
   if (!isOpen || !product) return null;
 
@@ -47,7 +47,7 @@ export function BarcodePreviewModal({
         {/* Printable Barcode Label Card */}
         <div className="mt-5 rounded-2xl border-2 border-dashed border-gray-300 bg-white p-5 text-center shadow-xs dark:border-navy-700 dark:bg-navy-950">
           <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-            Verdant Retail
+            BABAS POS & Inventory
           </p>
           <h4 className="mt-1 text-sm font-bold text-navy-900 dark:text-white truncate">
             {product.name}

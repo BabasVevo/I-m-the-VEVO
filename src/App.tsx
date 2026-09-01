@@ -3,6 +3,8 @@ import { Loader2 } from 'lucide-react';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { ToastProvider } from '@/context/ToastContext';
+import { NotificationProvider } from '@/context/NotificationContext';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PermissionGuard } from '@/components/auth/PermissionGuard';
 import { LoginPage } from '@/pages/auth/LoginPage';
@@ -20,7 +22,12 @@ import { CustomerSegmentsPage } from '@/pages/CustomerSegmentsPage';
 import { SuppliersPage } from '@/pages/SuppliersPage';
 import { PurchasesPage } from '@/pages/PurchasesPage';
 import { ExpensesPage } from '@/pages/ExpensesPage';
+import { ApprovalsPage } from '@/pages/ApprovalsPage';
+import { NotificationsPage } from '@/pages/NotificationsPage';
+import { EmployeesPage } from '@/pages/EmployeesPage';
+import { BranchesPage } from '@/pages/BranchesPage';
 import { SettingsPage } from '@/pages/SettingsPage';
+import { ReportsPage } from '@/pages/ReportsPage';
 import { PlaceholderPages } from '@/pages/PlaceholderPages';
 import { NAV_SECTIONS } from '@/lib/constants';
 
@@ -47,9 +54,20 @@ function AppRoutes() {
     '/purchases',
     '/suppliers',
     '/expenses',
+    '/approvals',
+    '/notifications',
     '/customers',
     '/segments',
     '/customers/segments',
+    '/reports',
+    '/analytics',
+    '/employees',
+    '/staff',
+    '/roles',
+    '/activity-log',
+    '/audit-log',
+    '/branches',
+    '/locations',
     '/settings'
   ];
 
@@ -103,6 +121,22 @@ function AppRoutes() {
           <PermissionGuard permission="expenses.view"><ExpensesPage /></PermissionGuard>
         } />
 
+        <Route path="/approvals" element={
+          <PermissionGuard permission="expenses.view"><ApprovalsPage /></PermissionGuard>
+        } />
+
+        <Route path="/notifications" element={
+          <NotificationsPage />
+        } />
+
+        <Route path="/reports" element={
+          <PermissionGuard permission="reports.view"><ReportsPage /></PermissionGuard>
+        } />
+
+        <Route path="/analytics" element={
+          <PermissionGuard permission="analytics.view"><ReportsPage /></PermissionGuard>
+        } />
+
         <Route path="/customers" element={
           <PermissionGuard permission="customers.view"><CustomersPage /></PermissionGuard>
         } />
@@ -113,6 +147,34 @@ function AppRoutes() {
 
         <Route path="/customers/segments" element={
           <PermissionGuard permission="segments.manage"><CustomerSegmentsPage /></PermissionGuard>
+        } />
+
+        <Route path="/employees" element={
+          <PermissionGuard permission="employees.view"><EmployeesPage /></PermissionGuard>
+        } />
+
+        <Route path="/staff" element={
+          <PermissionGuard permission="employees.view"><EmployeesPage /></PermissionGuard>
+        } />
+
+        <Route path="/roles" element={
+          <PermissionGuard permission="roles.manage"><EmployeesPage /></PermissionGuard>
+        } />
+
+        <Route path="/activity-log" element={
+          <PermissionGuard permission="activity.view"><EmployeesPage /></PermissionGuard>
+        } />
+
+        <Route path="/audit-log" element={
+          <PermissionGuard permission="activity.view"><EmployeesPage /></PermissionGuard>
+        } />
+
+        <Route path="/branches" element={
+          <PermissionGuard permission="branches.manage"><BranchesPage /></PermissionGuard>
+        } />
+
+        <Route path="/locations" element={
+          <PermissionGuard permission="branches.manage"><BranchesPage /></PermissionGuard>
         } />
 
         {/* All other nav placeholder pages */}
@@ -143,14 +205,18 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <AuthProvider>
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
-        </AuthProvider>
-      </ToastProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <NotificationProvider>
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
+            </NotificationProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }

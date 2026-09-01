@@ -40,12 +40,12 @@ import { CategoryFormModal } from '@/components/categories/CategoryFormModal';
 import { StockAdjustmentModal } from '@/components/inventory/StockAdjustmentModal';
 
 export function ProductsPage() {
-  const { profile } = useAuth();
+  const { profile, business } = useAuth();
   const { hasPermission } = usePermissions();
   const { addToast } = useToast();
 
-  const businessId = profile?.business_id || 'demo-biz-1';
-  const currencySymbol = 'TZS';
+  const businessId = profile?.business_id || business?.id || 'demo-biz-1';
+  const currencySymbol = business?.currency || 'BIF';
 
   const canManageProducts = hasPermission('products.create') || hasPermission('products.edit');
   const canDeleteProducts = hasPermission('products.delete');
@@ -220,7 +220,7 @@ export function ProductsPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Verdant_Products_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `BABAS_Products_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

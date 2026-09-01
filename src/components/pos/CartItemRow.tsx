@@ -14,7 +14,7 @@ interface CartItemRowProps {
 
 export function CartItemRow({
   item,
-  currency = 'TZS',
+  currency = 'BIF',
   onUpdateQuantity,
   onOpenDiscountModal,
   onRemoveItem,

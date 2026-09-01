@@ -50,7 +50,7 @@ export function SuppliersPage() {
   const [selectedSupplierForPayment, setSelectedSupplierForPayment] = useState<Supplier | null>(null);
 
   const businessId = business?.id || 'demo-biz-1';
-  const currency = business?.currency || 'TZS';
+  const currency = business?.currency || 'BIF';
 
   const loadData = useCallback(async () => {
     try {

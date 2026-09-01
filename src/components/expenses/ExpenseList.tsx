@@ -72,7 +72,7 @@ export function ExpenseList({
   selectedBranch,
   startDate,
   endDate,
-  currency = 'TZS',
+  currency = 'BIF',
   loading,
   onSearchChange,
   onCategoryChange,

@@ -26,12 +26,12 @@ interface ReceiptPreviewProps {
 export function ReceiptPreview({
   sale,
   receiptSettings,
-  businessName = 'Verdant Retail & Co.',
-  businessAddress = '14 Kivukoni Front, Dar es Salaam',
-  businessPhone = '+255 22 211 4300',
-  businessEmail = 'contact@verdantpos.com',
-  businessTaxId = 'TIN-992-108-441',
-  currency = 'TZS',
+  businessName = 'BABAS POS & Inventory',
+  businessAddress = 'Boulevard du 1er Novembre, Rohero, Bujumbura',
+  businessPhone = '+257 22 25 1200',
+  businessEmail = 'contact@babaspos.bi',
+  businessTaxId = 'NIF-400-019-823',
+  currency = 'BIF',
   format = '80mm',
   onFormatChange,
   showFormatSelector = true,
@@ -567,7 +567,7 @@ export function ReceiptPreview({
             <div className="mt-4 border-t border-dashed border-gray-300 pt-3 text-center text-[9px] text-gray-600 dark:border-navy-700 dark:text-gray-400">
               <p className="font-bold text-gray-800 dark:text-gray-200">{footerMessage}</p>
               <p className="mt-1 text-[8px] text-gray-500">{returnPolicy}</p>
-              <p className="mt-2 text-[8px] text-gray-400">Powered by Verdant Cloud POS</p>
+              <p className="mt-2 text-[8px] text-gray-400">Powered by BABAS POS & Inventory</p>
             </div>
           </div>
         )}

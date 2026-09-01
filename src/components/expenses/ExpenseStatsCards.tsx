@@ -7,7 +7,7 @@ interface ExpenseStatsCardsProps {
   currency?: string;
 }
 
-export function ExpenseStatsCards({ stats, currency = 'TZS' }: ExpenseStatsCardsProps) {
+export function ExpenseStatsCards({ stats, currency = 'BIF' }: ExpenseStatsCardsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <div id="stat-total-expenses-month" className="rounded-xl border border-gray-200 bg-white p-5 shadow-xs transition-all dark:border-navy-800 dark:bg-navy-900">

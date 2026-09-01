@@ -1,5 +1,5 @@
 {
-  "name": "Verdant — Cloud POS, Inventory & CRM",
+  "name": "BABAS POS & Inventory",
   "description": "Comprehensive business management platform featuring Point of Sale, inventory tracking, CRM, and analytics.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

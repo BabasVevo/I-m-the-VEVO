@@ -27,7 +27,7 @@ interface CustomerTableProps {
 
 export function CustomerTable({
   customers,
-  currency = 'TZS',
+  currency = 'BIF',
   onViewProfile,
   onEditCustomer,
   onNewSaleForCustomer,

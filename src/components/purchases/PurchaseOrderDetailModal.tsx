@@ -9,6 +9,7 @@ import {
   Truck,
 } from 'lucide-react';
 import type { PurchaseOrder } from '@/types/database';
+import { ApprovalHistoryTimeline } from '@/components/approvals/ApprovalHistoryTimeline';
 import {
   formatCurrency,
   formatDate,
@@ -33,14 +34,14 @@ interface PurchaseOrderDetailModalProps {
 export function PurchaseOrderDetailModal({
   isOpen,
   purchaseOrder,
-  currency = 'TZS',
+  currency = 'BIF',
   onClose,
   onReceiveStock,
   onRecordPayment,
   onReturnGoods,
   onCancelPO,
 }: PurchaseOrderDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<'items' | 'payments' | 'returns'>('items');
+  const [activeTab, setActiveTab] = useState<'items' | 'payments' | 'returns' | 'history'>('items');
 
   if (!isOpen || !purchaseOrder) return null;
 
@@ -223,6 +224,16 @@ export function PurchaseOrderDetailModal({
               }`}
             >
               Returns & Debit Notes ({purchaseOrder.returns?.length || 0})
+            </button>
+            <button
+              onClick={() => setActiveTab('history')}
+              className={`pb-2.5 transition-colors border-b-2 ${
+                activeTab === 'history'
+                  ? 'border-brand-600 text-brand-600 dark:border-brand-400 dark:text-brand-400 font-bold'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'
+              }`}
+            >
+              Approval Audit Trail
             </button>
           </div>
 
@@ -412,6 +423,19 @@ export function PurchaseOrderDetailModal({
                   </table>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* History Tab */}
+          {activeTab === 'history' && (
+            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-2xs dark:border-navy-800 dark:bg-navy-900 space-y-3">
+              <h4 className="text-xs font-bold text-navy-900 dark:text-white">
+                Purchase Order Lifecycle & Approvals Timeline
+              </h4>
+              <ApprovalHistoryTimeline
+                entityType="purchase_order"
+                entityId={purchaseOrder.id}
+              />
             </div>
           )}
         </div>

@@ -40,7 +40,7 @@ export function RegisterPage() {
         phone,
         address: businessAddress,
       });
-      toast('Account created in Demo Mode! Welcome to Verdant.', 'success');
+      toast('Account created in Demo Mode! Welcome to BABAS.', 'success');
       navigate('/dashboard');
       setLoading(false);
       return;
@@ -62,21 +62,41 @@ export function RegisterPage() {
         .single();
       if (bizError) throw bizError;
 
-      // 3. Get business_owner system role
-      const { data: ownerRole } = await supabase
+      // 3. Get or create super_admin system role
+      let { data: ownerRole } = await supabase
         .from('roles')
         .select('id')
-        .eq('name', 'business_owner')
+        .or('name.eq.super_admin,name.eq.business_owner,name.eq.admin')
         .eq('is_system', true)
+        .order('name', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
-      // 4. Create profile (without branch_id first — branch doesn't exist yet)
+      if (!ownerRole) {
+        const { data: createdRole } = await supabase
+          .from('roles')
+          .insert({
+            business_id: biz.id,
+            name: 'super_admin',
+            display_name: 'Super Administrator',
+            description: 'Super Administrator with unrestricted master access across all business modules.',
+            is_system: true,
+          })
+          .select('id')
+          .single();
+        ownerRole = createdRole;
+      }
+
+      // 4. Create profile with Super Administrator role
       const { error: profError } = await supabase.from('profiles').insert({
         id: userId,
         business_id: biz.id,
+        employee_id: 'EMP-001',
         full_name: fullName,
+        email,
         phone,
         role_id: ownerRole?.id ?? null,
+        job_title: 'Super Administrator & Founder',
         is_active: true,
       });
       if (profError) throw profError;

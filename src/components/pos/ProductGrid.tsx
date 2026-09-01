@@ -20,7 +20,7 @@ export function ProductGrid({
   loading,
   cartMap,
   onAddToCart,
-  currency = 'TZS',
+  currency = 'BIF',
   viewMode = 'grid',
   canOverrideStock = false,
 }: ProductGridProps) {

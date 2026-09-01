@@ -21,7 +21,7 @@ export function CustomerSelectModal({
   onSelectCustomer,
   onOpenCreateCustomer,
   onClose,
-  currency = 'TZS',
+  currency = 'BIF',
 }: CustomerSelectModalProps) {
   const [search, setSearch] = useState('');
   const [customers, setCustomers] = useState<Customer[]>([]);

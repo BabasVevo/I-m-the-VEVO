@@ -5,7 +5,6 @@ import {
   Package,
   Boxes,
   Users,
-  Receipt,
   RotateCw,
   Sparkles,
   ArrowRight,
@@ -27,13 +26,14 @@ import { StatCardsGrid } from '@/components/dashboard/StatCardsGrid';
 import { SalesTargetCard } from '@/components/dashboard/SalesTargetCard';
 import { LowStockAlertCard } from '@/components/dashboard/LowStockAlertCard';
 import { RecentSalesTable } from '@/components/dashboard/RecentSalesTable';
+import { AdminAlertsBanner } from '@/components/notifications/AdminAlertsBanner';
 import type { Branch, Sale, InventoryItem, SalesTarget } from '@/types/database';
 
 export function DashboardPage() {
   const { profile, role, business, isDemoMode } = useAuth();
   const { toast } = useToast();
 
-  const businessCurrency = business?.currency || 'TZS';
+  const businessCurrency = business?.currency || 'BIF';
   const userRole = role?.name || 'staff';
   const canViewAllBranches = ['super_admin', 'business_owner', 'accountant', 'marketing_manager'].includes(userRole);
   const canEditTarget = ['super_admin', 'business_owner', 'branch_manager'].includes(userRole);
@@ -179,11 +179,14 @@ export function DashboardPage() {
     { label: 'Products', path: '/products', icon: Package, desc: 'Manage catalog & prices' },
     { label: 'Inventory Stock', path: '/stock', icon: Boxes, desc: 'View & transfer stock' },
     { label: 'Customers CRM', path: '/customers', icon: Users, desc: 'Manage client accounts' },
-    { label: 'Sales Records', path: '/sales', icon: Receipt, desc: 'View receipts & invoices' },
+    { label: 'Staff & Roles', path: '/employees', icon: Users, desc: 'Employees & access control' },
   ];
 
   return (
     <div className="space-y-6">
+      {/* Real-time Admin & Manager Alerts Banner */}
+      <AdminAlertsBanner />
+
       {/* 1. TOP HEADER & SCOPE BAR */}
       <div className="flex flex-col justify-between gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-navy-800 dark:bg-navy-900 lg:flex-row lg:items-center">
         <div className="space-y-1">
@@ -199,7 +202,7 @@ export function DashboardPage() {
           </div>
           <p className="text-xs text-gray-500 dark:text-navy-400">
             Real-time analytics, revenue targets, and stock control for{' '}
-            <strong className="text-navy-900 dark:text-white">{business?.name ?? 'Verdant'}</strong>
+            <strong className="text-navy-900 dark:text-white">{business?.name ?? 'BABAS POS & Inventory'}</strong>
             {' · '}
             <span className="text-brand-600 dark:text-brand-400 font-medium">
               {role ? ROLE_LABELS[role.name] ?? role.name : 'Administrator'}

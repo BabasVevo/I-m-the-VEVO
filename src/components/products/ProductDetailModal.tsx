@@ -32,7 +32,7 @@ export function ProductDetailModal({
   onClose,
   product,
   branches,
-  currencySymbol = 'TZS',
+  currencySymbol = 'BIF',
   onEdit,
   onAdjustStock,
   onPrintBarcode,

@@ -18,7 +18,7 @@ export function CustomerCreditPaymentModal({
   isOpen,
   customer,
   businessId,
-  currency = 'TZS',
+  currency = 'BIF',
   onPaymentRecorded,
   onClose,
 }: CustomerCreditPaymentModalProps) {

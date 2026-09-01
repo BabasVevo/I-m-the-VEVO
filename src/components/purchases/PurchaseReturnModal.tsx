@@ -29,7 +29,7 @@ interface PurchaseReturnModalProps {
 export function PurchaseReturnModal({
   isOpen,
   purchaseOrder,
-  currency = 'TZS',
+  currency = 'BIF',
   onClose,
   onSubmit,
 }: PurchaseReturnModalProps) {

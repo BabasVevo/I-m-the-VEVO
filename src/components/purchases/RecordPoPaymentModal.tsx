@@ -20,7 +20,7 @@ interface RecordPoPaymentModalProps {
 export function RecordPoPaymentModal({
   isOpen,
   purchaseOrder,
-  currency = 'TZS',
+  currency = 'BIF',
   onClose,
   onSubmit,
 }: RecordPoPaymentModalProps) {
@@ -117,7 +117,7 @@ export function RecordPoPaymentModal({
 
           <div>
             <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
-              Payment Amount (TZS) <span className="text-rose-500">*</span>
+              Payment Amount ({currency}) <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
               <input

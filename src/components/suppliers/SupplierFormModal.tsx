@@ -28,7 +28,7 @@ export function SupplierFormModal({
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
-  const [country, setCountry] = useState('Tanzania');
+  const [country, setCountry] = useState('Burundi');
   const [paymentTerms, setPaymentTerms] = useState<PaymentTerms>('net_30');
   const [creditLimit, setCreditLimit] = useState<number | string>(0);
   const [assignedBranchId, setAssignedBranchId] = useState<string>('');
@@ -50,7 +50,7 @@ export function SupplierFormModal({
       setEmail(supplier.email || '');
       setAddress(supplier.address || '');
       setCity(supplier.city || '');
-      setCountry(supplier.country || 'Tanzania');
+      setCountry(supplier.country || 'Burundi');
       setPaymentTerms(supplier.payment_terms || 'net_30');
       setCreditLimit(supplier.credit_limit || 0);
       setAssignedBranchId(supplier.assigned_branch_id || '');
@@ -210,7 +210,7 @@ export function SupplierFormModal({
                   type="text"
                   value={taxNumber}
                   onChange={(e) => setTaxNumber(e.target.value)}
-                  placeholder="e.g. TRA-109-882-311"
+                  placeholder="e.g. NIF-400-019-823"
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                 />
               </div>
@@ -223,7 +223,7 @@ export function SupplierFormModal({
                   type="url"
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
-                  placeholder="https://example.com"
+                  placeholder="https://example.bi"
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                 />
               </div>
@@ -244,7 +244,7 @@ export function SupplierFormModal({
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+255 754 000 111"
+                  placeholder="+257 75 40 00 11"
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                 />
               </div>
@@ -257,7 +257,7 @@ export function SupplierFormModal({
                   type="text"
                   value={alternativePhone}
                   onChange={(e) => setAlternativePhone(e.target.value)}
-                  placeholder="+255 22 200 300"
+                  placeholder="+257 22 20 03 00"
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                 />
               </div>
@@ -270,7 +270,7 @@ export function SupplierFormModal({
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="orders@supplier.co.tz"
+                  placeholder="orders@supplier.bi"
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                 />
               </div>
@@ -283,7 +283,7 @@ export function SupplierFormModal({
                   type="text"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="e.g. Plot 45, Old Moshi Road"
+                  placeholder="e.g. Avenue de l'Industrie, Quartier Industriel"
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                 />
               </div>
@@ -296,7 +296,7 @@ export function SupplierFormModal({
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="e.g. Moshi / Dar es Salaam"
+                  placeholder="e.g. Bujumbura / Gitega"
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                 />
               </div>
@@ -309,7 +309,7 @@ export function SupplierFormModal({
                   type="text"
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
-                  placeholder="Tanzania"
+                  placeholder="Burundi"
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:outline-hidden dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                 />
               </div>

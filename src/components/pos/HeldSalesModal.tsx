@@ -14,7 +14,7 @@ interface HeldSalesModalProps {
 export function HeldSalesModal({
   isOpen,
   heldSales,
-  currency = 'TZS',
+  currency = 'BIF',
   onRecallSale,
   onDiscardSale,
   onClose,

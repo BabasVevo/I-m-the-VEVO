@@ -361,6 +361,10 @@ export const INITIAL_DEMO_ACTIVITY: CustomerActivity[] = [
 ];
 
 // Helper storage functions
+export function getStoredCustomers(): Customer[] {
+  return getStored<Customer[]>(DEMO_CUSTOMERS_KEY, INITIAL_DEMO_CUSTOMERS);
+}
+
 function getStored<T>(key: string, defaultVal: T): T {
   try {
     const raw = localStorage.getItem(key);

@@ -52,11 +52,11 @@ import { ReceiptSettingsModal } from '@/components/sales/ReceiptSettingsModal';
 
 export function SalesPage() {
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { profile, business } = useAuth();
   const { addToast } = useToast();
 
-  const businessId = profile?.business_id || 'demo-biz-1';
-  const currency = 'TZS';
+  const businessId = profile?.business_id || business?.id || 'demo-biz-1';
+  const currency = business?.currency || 'BIF';
 
   // Master Data State
   const [sales, setSales] = useState<Sale[]>([]);
@@ -200,7 +200,7 @@ export function SalesPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `Verdant_Sales_Report_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `BABAS_Sales_Report_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -967,11 +967,11 @@ export function SalesPage() {
           isOpen={Boolean(activeSaleForPrint)}
           sale={activeSaleForPrint}
           receiptSettings={receiptSettings}
-          businessName="Verdant Retail & Co."
-          businessAddress="14 Kivukoni Front, Dar es Salaam"
-          businessPhone="+255 22 211 4300"
-          businessEmail="contact@verdantpos.com"
-          businessTaxId="TIN-992-108-441"
+          businessName={business?.name || "BABAS POS & Inventory"}
+          businessAddress={business?.address || "Boulevard du 1er Novembre, Rohero, Bujumbura"}
+          businessPhone={business?.phone || "+257 22 25 1200"}
+          businessEmail={business?.email || "contact@babaspos.bi"}
+          businessTaxId="NIF-400-019-823"
           currency={currency}
           onClose={() => setActiveSaleForPrint(null)}
           onOpenSettings={() => {

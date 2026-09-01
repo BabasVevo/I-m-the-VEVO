@@ -17,7 +17,7 @@ interface StatCardsGridProps {
   loading: boolean;
 }
 
-export function StatCardsGrid({ stats, currency = 'TZS', loading }: StatCardsGridProps) {
+export function StatCardsGrid({ stats, currency = 'BIF', loading }: StatCardsGridProps) {
   const cards = [
     {
       id: 'stat-sales-today',

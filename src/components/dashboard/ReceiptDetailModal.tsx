@@ -9,7 +9,7 @@ interface ReceiptDetailModalProps {
   onClose: () => void;
 }
 
-export function ReceiptDetailModal({ sale, currency = 'TZS', onClose }: ReceiptDetailModalProps) {
+export function ReceiptDetailModal({ sale, currency = 'BIF', onClose }: ReceiptDetailModalProps) {
   const { toast } = useToast();
 
   if (!sale) return null;

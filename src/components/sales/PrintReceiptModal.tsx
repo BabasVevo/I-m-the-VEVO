@@ -26,7 +26,7 @@ export function PrintReceiptModal({
   businessPhone,
   businessEmail,
   businessTaxId,
-  currency = 'TZS',
+  currency = 'BIF',
   onClose,
   onOpenSettings,
 }: PrintReceiptModalProps) {

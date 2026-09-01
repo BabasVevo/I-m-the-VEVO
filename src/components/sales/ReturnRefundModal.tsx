@@ -48,7 +48,7 @@ export function ReturnRefundModal({
   isOpen,
   sale,
   currentUser,
-  currency = 'TZS',
+  currency = 'BIF',
   onClose,
   onSuccess,
 }: ReturnRefundModalProps) {

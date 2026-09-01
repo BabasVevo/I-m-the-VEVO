@@ -20,6 +20,8 @@ import {
   Bell,
   Settings,
   CreditCard,
+  History,
+  ClipboardCheck,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -75,6 +77,7 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Business',
     items: [
+      { label: 'Approvals Hub', path: '/approvals', icon: ClipboardCheck, permission: 'expenses.view' },
       { label: 'Suppliers', path: '/suppliers', icon: Truck, permission: 'suppliers.view' },
       { label: 'Expenses', path: '/expenses', icon: CreditCard, permission: 'expenses.view' },
       { label: 'Reports', path: '/reports', icon: Receipt, permission: 'reports.view' },
@@ -84,9 +87,10 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Management',
     items: [
-      { label: 'Branches', path: '/branches', icon: Building2, permission: 'branches.view' },
-      { label: 'Staff', path: '/staff', icon: UserCog, permission: 'staff.view' },
+      { label: 'Employees', path: '/employees', icon: UserCog, permission: 'employees.view' },
       { label: 'Roles & Permissions', path: '/roles', icon: ShieldCheck, permission: 'roles.manage' },
+      { label: 'Activity Log', path: '/activity-log', icon: History, permission: 'employees.view' },
+      { label: 'Branches', path: '/branches', icon: Building2, permission: 'branches.view' },
     ],
   },
   {
@@ -102,12 +106,14 @@ export const NAV_SECTIONS: NavSection[] = [
 export const ALL_NAV_ITEMS: NavItem[] = NAV_SECTIONS.flatMap((s) => s.items);
 
 export const ROLE_LABELS: Record<string, string> = {
-  super_admin: 'Super Admin',
+  super_admin: 'Super Administrator',
+  admin: 'Administrator',
   business_owner: 'Business Owner',
   branch_manager: 'Branch Manager',
   cashier: 'Cashier',
-  marketing_manager: 'Marketing Manager',
   inventory_manager: 'Inventory Manager',
+  sales_employee: 'Sales Employee',
+  marketing_manager: 'Marketing Manager',
   accountant: 'Accountant',
   staff: 'Staff',
 };

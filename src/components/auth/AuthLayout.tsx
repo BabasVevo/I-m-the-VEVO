@@ -10,7 +10,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 backdrop-blur">
             <Leaf className="h-6 w-6" />
           </div>
-          <span className="text-xl font-bold tracking-tight">Verdant</span>
+          <span className="text-xl font-bold tracking-tight">BABAS POS & Inventory</span>
         </div>
         <div className="relative z-10 text-white">
           <h1 className="text-4xl font-bold leading-tight">
@@ -28,7 +28,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             ))}
           </div>
         </div>
-        <p className="relative z-10 text-sm text-brand-50/60">© 2026 Verdant. All rights reserved.</p>
+        <p className="relative z-10 text-sm text-brand-50/60">© 2026 BABAS POS & Inventory. All rights reserved.</p>
         {/* Decorative circles */}
         <div className="absolute -right-20 top-20 h-72 w-72 rounded-full bg-white/5" />
         <div className="absolute -bottom-10 -left-10 h-48 w-48 rounded-full bg-white/5" />
@@ -41,7 +41,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white">
               <Leaf className="h-5 w-5" />
             </div>
-            <span className="text-lg font-bold text-navy-900 dark:text-white">Verdant</span>
+            <span className="text-lg font-bold text-navy-900 dark:text-white">BABAS</span>
           </div>
           {children}
         </div>

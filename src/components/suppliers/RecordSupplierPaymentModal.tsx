@@ -19,7 +19,7 @@ interface RecordSupplierPaymentModalProps {
 export function RecordSupplierPaymentModal({
   isOpen,
   supplier,
-  currency = 'TZS',
+  currency = 'BIF',
   onClose,
   onSubmit,
 }: RecordSupplierPaymentModalProps) {

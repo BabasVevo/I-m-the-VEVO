@@ -8,7 +8,7 @@ interface CustomerStatsCardsProps {
   onFilterPreset?: (preset: string) => void;
 }
 
-export function CustomerStatsCards({ stats, currency = 'TZS', onFilterPreset }: CustomerStatsCardsProps) {
+export function CustomerStatsCards({ stats, currency = 'BIF', onFilterPreset }: CustomerStatsCardsProps) {
   const cards = [
     {
       id: 'total-customers-stat',

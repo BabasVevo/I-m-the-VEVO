@@ -51,7 +51,7 @@ export function PaymentModal({
   taxRate,
   taxAmount,
   totalAmount,
-  currency = 'TZS',
+  currency = 'BIF',
   onSaleCompleted,
   onClose,
 }: PaymentModalProps) {
@@ -60,7 +60,7 @@ export function PaymentModal({
   const [cashTendered, setCashTendered] = useState<string>(totalAmount.toString());
   
   // Mobile Money fields
-  const [momoProvider, setMomoProvider] = useState<'mpesa' | 'airtel' | 'tigopesa' | 'halopesa'>('mpesa');
+  const [momoProvider, setMomoProvider] = useState<'lumicash' | 'ecocash' | 'airtel' | 'other'>('lumicash');
   const [momoPhone, setMomoPhone] = useState(customer?.phone || '');
   const [momoRef, setMomoRef] = useState('');
 
@@ -69,7 +69,7 @@ export function PaymentModal({
   const [cardLast4, setCardLast4] = useState('');
 
   // Bank Transfer fields
-  const [bankName, setBankName] = useState('CRDB Bank');
+  const [bankName, setBankName] = useState('Interbank Burundi (IBB)');
   const [bankRef, setBankRef] = useState('');
 
   // Split payment fields
@@ -371,15 +371,15 @@ export function PaymentModal({
                 </label>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {[
-                    { id: 'mpesa', name: 'Vodacom M-Pesa' },
+                    { id: 'lumicash', name: 'Lumicash' },
+                    { id: 'ecocash', name: 'EcoCash' },
                     { id: 'airtel', name: 'Airtel Money' },
-                    { id: 'tigopesa', name: 'Tigo Pesa / Mixx' },
-                    { id: 'halopesa', name: 'Halopesa' },
+                    { id: 'other', name: 'Other Wallet' },
                   ].map((p) => (
                     <button
                       key={p.id}
                       type="button"
-                      onClick={() => setMomoProvider(p.id as 'mpesa' | 'airtel' | 'tigopesa' | 'halopesa')}
+                      onClick={() => setMomoProvider(p.id as 'lumicash' | 'ecocash' | 'airtel' | 'other')}
                       className={`rounded-xl border p-2.5 text-center text-xs font-bold transition ${
                         momoProvider === p.id
                           ? 'border-brand-500 bg-brand-50 text-brand-700 dark:border-brand-500 dark:bg-brand-950/40 dark:text-brand-300'
@@ -401,7 +401,7 @@ export function PaymentModal({
                     type="tel"
                     value={momoPhone}
                     onChange={(e) => setMomoPhone(e.target.value)}
-                    placeholder="+255 7XX XXX XXX"
+                    placeholder="+257 7X XX XX XX"
                     className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-xs text-navy-900 outline-hidden transition focus:border-brand-500 focus:bg-white dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                   />
                 </div>
@@ -467,11 +467,13 @@ export function PaymentModal({
                     onChange={(e) => setBankName(e.target.value)}
                     className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-xs text-navy-900 outline-hidden transition focus:border-brand-500 focus:bg-white dark:border-navy-700 dark:bg-navy-950 dark:text-white"
                   >
-                    <option value="CRDB Bank">CRDB Bank</option>
-                    <option value="NMB Bank">NMB Bank</option>
-                    <option value="Stanbic Bank">Stanbic Bank</option>
-                    <option value="Absa Bank">Absa Bank</option>
-                    <option value="Standard Chartered">Standard Chartered</option>
+                    <option value="Interbank Burundi (IBB)">Interbank Burundi (IBB)</option>
+                    <option value="BANCOBU">BANCOBU</option>
+                    <option value="BCB (Banque Commerciale du Burundi)">BCB (Banque Commerciale du Burundi)</option>
+                    <option value="Ecobank Burundi">Ecobank Burundi</option>
+                    <option value="CRDB Bank Burundi">CRDB Bank Burundi</option>
+                    <option value="FinBank Burundi">FinBank Burundi</option>
+                    <option value="KCB Bank Burundi">KCB Bank Burundi</option>
                     <option value="Other Bank">Other Bank</option>
                   </select>
                 </div>

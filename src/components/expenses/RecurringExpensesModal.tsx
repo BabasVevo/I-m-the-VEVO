@@ -15,7 +15,7 @@ interface RecurringExpensesModalProps {
 
 export function RecurringExpensesModal({
   isOpen,
-  currency = 'TZS',
+  currency = 'BIF',
   onClose,
   onRefresh,
 }: RecurringExpensesModalProps) {

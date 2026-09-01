@@ -1026,6 +1026,40 @@ export async function createPurchaseReturn(
   return newReturn;
 }
 
+export async function updatePurchaseOrder(
+  poId: string,
+  updates: Partial<PurchaseOrder>
+): Promise<PurchaseOrder> {
+  const now = new Date().toISOString();
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabase
+        .from('purchase_orders')
+        .update({ ...updates, updated_at: now })
+        .eq('id', poId)
+        .select('*, branch:branches(*), supplier:suppliers(*)')
+        .single();
+      if (!error && data) return data as PurchaseOrder;
+    } catch (err) {
+      console.warn('Supabase updatePurchaseOrder error, falling back:', err);
+    }
+  }
+
+  const orders = getStoredPurchases();
+  const idx = orders.findIndex((o) => o.id === poId);
+  if (idx === -1) throw new Error('Purchase order not found');
+
+  const updated: PurchaseOrder = {
+    ...orders[idx],
+    ...updates,
+    updated_at: now,
+  };
+
+  orders[idx] = updated;
+  saveStoredPurchases(orders);
+  return updated;
+}
+
 export async function updatePurchaseOrderStatus(
   poId: string,
   status: PurchaseOrderStatus

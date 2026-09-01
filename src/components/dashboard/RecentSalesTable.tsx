@@ -37,7 +37,7 @@ interface RecentSalesTableProps {
 export function RecentSalesTable({
   sales,
   totalCount,
-  currency = 'TZS',
+  currency = 'BIF',
   currentPage,
   pageSize,
   searchQuery,

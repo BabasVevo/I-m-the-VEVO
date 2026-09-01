@@ -20,7 +20,7 @@ interface CustomerGridProps {
 
 export function CustomerGrid({
   customers,
-  currency = 'TZS',
+  currency = 'BIF',
   onViewProfile,
   onEditCustomer,
   onNewSaleForCustomer,

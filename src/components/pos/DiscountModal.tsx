@@ -21,7 +21,7 @@ export function DiscountModal({
   originalAmount,
   initialType = 'percentage',
   initialValue = 0,
-  currency = 'TZS',
+  currency = 'BIF',
   maxPercentageAllowed = 20,
   isManagerOrOwner = false,
   onApply,

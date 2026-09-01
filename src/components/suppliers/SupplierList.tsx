@@ -54,7 +54,7 @@ export function SupplierList({
   selectedType,
   selectedBranch,
   hasBalanceOnly,
-  currency = 'TZS',
+  currency = 'BIF',
   loading,
   onSearchChange,
   onStatusChange,

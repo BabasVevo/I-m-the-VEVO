@@ -6,6 +6,7 @@ import { ExpenseList } from '@/components/expenses/ExpenseList';
 import { ExpenseFormModal } from '@/components/expenses/ExpenseFormModal';
 import { ExpenseCategoriesModal } from '@/components/expenses/ExpenseCategoriesModal';
 import { RecurringExpensesModal } from '@/components/expenses/RecurringExpensesModal';
+import { ApprovalActionModal } from '@/components/approvals/ApprovalActionModal';
 import {
   fetchExpenses,
   fetchExpenseStats,
@@ -13,10 +14,12 @@ import {
   createExpense,
   updateExpense,
   deleteExpense,
-  approveExpense,
-  rejectExpense,
   exportExpensesToCSV,
 } from '@/services/expenseService';
+import {
+  approveExpenseWorkflow,
+  rejectExpenseWorkflow,
+} from '@/services/approvalService';
 import { fetchSuppliers } from '@/services/supplierService';
 import type {
   Expense,
@@ -31,7 +34,7 @@ export function ExpensesPage() {
   const { addToast } = useToast();
 
   const businessId = business?.id || 'demo-biz-1';
-  const currency = business?.currency || 'TZS';
+  const currency = business?.currency || 'BIF';
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -60,6 +63,15 @@ export function ExpensesPage() {
   const [selectedExpenseForEdit, setSelectedExpenseForEdit] = useState<Expense | null>(null);
   const [categoriesModalOpen, setCategoriesModalOpen] = useState(false);
   const [recurringModalOpen, setRecurringModalOpen] = useState(false);
+  const [approvalModalOpen, setApprovalModalOpen] = useState(false);
+  const [approvalActionType, setApprovalActionType] = useState<'approve' | 'reject'>('approve');
+  const [targetApprovalExpense, setTargetApprovalExpense] = useState<Expense | null>(null);
+
+  const currentUser = {
+    id: user?.id || 'emp-user-1',
+    full_name: user?.email || 'Authorized User',
+    role_name: 'Manager',
+  };
 
   const loadData = useCallback(async () => {
     try {
@@ -118,40 +130,42 @@ export function ExpensesPage() {
     loadData();
   };
 
-  const handleApprove = async (expense: Expense) => {
-    try {
-      await approveExpense(expense.id, user?.id || 'demo-user-1');
-      addToast({
-        type: 'success',
-        title: 'Voucher Approved',
-        message: `Expense "${expense.title}" has been approved.`,
-      });
-      loadData();
-    } catch (err: unknown) {
-      addToast({
-        type: 'error',
-        title: 'Error',
-        message: err instanceof Error ? err.message : 'Failed to approve expense.',
-      });
-    }
+  const handleApprove = (expense: Expense) => {
+    setTargetApprovalExpense(expense);
+    setApprovalActionType('approve');
+    setApprovalModalOpen(true);
   };
 
-  const handleReject = async (expense: Expense) => {
-    const reason = window.prompt('Enter reason for rejection:');
-    if (reason === null) return;
+  const handleReject = (expense: Expense) => {
+    setTargetApprovalExpense(expense);
+    setApprovalActionType('reject');
+    setApprovalModalOpen(true);
+  };
+
+  const handleConfirmApprovalAction = async (notes: string) => {
+    if (!targetApprovalExpense) return;
     try {
-      await rejectExpense(expense.id, user?.id || 'demo-user-1', reason || 'Management review rejection');
-      addToast({
-        type: 'success',
-        title: 'Voucher Rejected',
-        message: `Expense "${expense.title}" marked as rejected.`,
-      });
+      if (approvalActionType === 'approve') {
+        await approveExpenseWorkflow(targetApprovalExpense.id, currentUser, notes);
+        addToast({
+          type: 'success',
+          title: 'Voucher Approved',
+          message: `Expense "${targetApprovalExpense.title}" has been approved.`,
+        });
+      } else {
+        await rejectExpenseWorkflow(targetApprovalExpense.id, currentUser, notes);
+        addToast({
+          type: 'success',
+          title: 'Voucher Rejected',
+          message: `Expense "${targetApprovalExpense.title}" marked as rejected.`,
+        });
+      }
       loadData();
     } catch (err: unknown) {
       addToast({
         type: 'error',
         title: 'Error',
-        message: err instanceof Error ? err.message : 'Failed to reject expense.',
+        message: err instanceof Error ? err.message : 'Approval action failed.',
       });
     }
   };
@@ -275,6 +289,37 @@ export function ExpensesPage() {
         currency={currency}
         onClose={() => setRecurringModalOpen(false)}
         onRefresh={loadData}
+      />
+
+      <ApprovalActionModal
+        isOpen={approvalModalOpen}
+        actionType={approvalActionType}
+        item={
+          targetApprovalExpense
+            ? {
+                id: targetApprovalExpense.id,
+                entity_type: 'expense',
+                code: targetApprovalExpense.voucher_number || 'EXP-VOUCHER',
+                title: targetApprovalExpense.title,
+                amount: Number(targetApprovalExpense.amount),
+                currency: targetApprovalExpense.currency || currency,
+                status: targetApprovalExpense.status,
+                requester_name: 'Staff Requester',
+                requester_role: 'Operations',
+                branch_name: branch?.name || 'Main Branch',
+                created_at: targetApprovalExpense.date,
+                date: targetApprovalExpense.date,
+                category_or_supplier: targetApprovalExpense.category?.name || 'Expense',
+                description: targetApprovalExpense.notes || '',
+                attachment_count: targetApprovalExpense.receipt_url ? 1 : 0,
+              }
+            : null
+        }
+        onClose={() => {
+          setApprovalModalOpen(false);
+          setTargetApprovalExpense(null);
+        }}
+        onConfirm={handleConfirmApprovalAction}
       />
     </div>
   );

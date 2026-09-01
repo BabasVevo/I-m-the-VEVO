@@ -16,7 +16,7 @@ export function ProductCard({
   branchId,
   cartQuantity = 0,
   onAddToCart,
-  currency = 'TZS',
+  currency = 'BIF',
   canOverrideStock = false,
 }: ProductCardProps) {
   // Find current branch stock
